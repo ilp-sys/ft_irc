@@ -8,7 +8,7 @@ class User
         int _userSock;
         std::string _name;
     public:
-        virtual ~User();
+        User(int fd);
 };
 
 #endif

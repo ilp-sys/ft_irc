@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "User.hpp"
+#include "Channel.hpp"
 
 #define BACKLOG 5
-#define MAX_EVETNS 10
-
+#define MAX_EVENTS 10
+#define BUFFER_SIZE 512
+ 
 class Server
 {
         int _kq;
@@ -23,14 +25,14 @@ class Server
         static Server _server;
         std::vector<User*> _users;
         std::vector<struct kevent> _events;
+        std::vector<Channel*> _channels;
 
         Server(){};
     public:
         static Server& getInstance();
 
-        void servSetup(char *ip);
+        void servSetup(char *port);
         void run();
-        void acceptNewClient();
 };
 
 #endif
