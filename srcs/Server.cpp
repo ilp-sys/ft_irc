@@ -64,11 +64,15 @@ void Server::run()
                 int readByte = recv(cliSock, buffer, sizeof(buffer), 0);
                 if (readByte < 0)
                 {
-                    //handle closed connection.. IDK
-                    //_users.erase(cliSock);
+                    struct kevent cliEvent;
+                    EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0);
+                    _events.push_back(cliEvent);
+                    //delete user from the vector and destruct the object
                 }
                 else
+                {
                     std::cout << "Received msg: " << buffer << std::endl;
+                }
                 memset(buffer, 0, sizeof(buffer));
             }
         }

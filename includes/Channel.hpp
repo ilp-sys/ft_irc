@@ -3,15 +3,17 @@
 
 #include <vector>
 
-#include "User.hpp"
 #include "Operator.hpp"
+
+class User;
 
 class Channel
 {
+        std::string _name;
         std::vector<User*> _users;
         Operator& _operator;
     public:
-        Channel();
+        Channel(std::string name, Operator& opeator);
 };
 
 
