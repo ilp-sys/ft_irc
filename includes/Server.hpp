@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <err.h>
 #include <sys/fcntl.h>
+#include <map>
 #include <vector>
 
 #include "User.hpp"
@@ -19,13 +20,13 @@
  
 class Server
 {
+        static Server _server;
+
         int _kq;
         int _servSock;
-        struct sockaddr_in _servAddress;
-        static Server _server;
-        std::vector<User*> _users;
-        std::vector<struct kevent> _events;
-        std::vector<Channel*> _channels;
+
+        std::map<int, User> _users;
+        std::map<std::string, Channel> _channels;
 
         Server(){};
     public:
