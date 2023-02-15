@@ -15,12 +15,10 @@
 # define C_YLLW "\033[33m" 
 # define C_BLUE "\033[34m" 
 
-/* (220213)
-		[user1] [privmsg] [target] [msg......]
-		1. user1이 타겟채널에 들어있지 않은데 멋대로 초대?
-			: 봇이 그 유저가 채널에 있는지 어떻게 검증? ->( 그래서 who 쿼리가 필요한 듯 하지만.. 우리는 가볍게 가는걸로)
-		2. 타겟이 봇 이름일 때는 DM이므로, DM 이면서 msg가 #으로 시작하는 채널명이면 그 채널명으로 들어가도록
-			: 일단 띄어쓰기 고려하지않고 진행 알아서 귓말을 잘 보내자
+/* (021422)
+  watching()에서 메세지들을 관측하고
+  thinking()은 파싱된 메세지를 가지고 어떤 응답을 할지만 반환하는 형식은 어떤가?
+  reply()에서 이제 send를 하는 식으로....?
 */
 
 class Bot {
@@ -29,6 +27,8 @@ private :
   char * _server_pass;
   int _server_port;
   
+  std::string _target;
+
   int _my_sock;
   sockaddr_in _server_addr;
 
@@ -38,9 +38,13 @@ private :
   // connect to server and register server
   int server_welcome();
 	
-  int watching();
-  void thinking(std::string txt);
+  std::string watching();
+  std::string thinking(std::string watched_msg);
+  std::string make_sense(std::string bot_cmd);
   
+  void answering(std::string answer);
+
+
 	void error_handle(int ret, const char *noti);
 
 public :
