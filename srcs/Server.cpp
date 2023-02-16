@@ -72,7 +72,7 @@ void Server::run()
                 char buffer[BUFFER_SIZE];
                 int cliSock = eventlist[i].ident;
                 int readByte = recv(cliSock, buffer, sizeof(buffer), 0);
-                if (readByte < 0)
+                if (readByte <= 0)
                 {
                     struct kevent cliEvent;
                     EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0); //TODO: why do we have to set EVFILT_READ for this call?
