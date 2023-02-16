@@ -64,7 +64,7 @@ void Server::run()
             if (eventlist[i].ident == _servSock)
             {
                 //set the new client socket to nonblock and add it to changelist
-                int cliSock = accept(_servSock, NULL, NULL);
+                int cliSock = accept(_servSock, NULL, NULL); //TODO: handle accept failure
                 if ((fcntl(cliSock, F_SETFL, fcntl(cliSock, F_GETFL) | O_NONBLOCK)) == -1)
                     err(EXIT_FAILURE, "failed to set socket to NONBLOCK");
                 struct kevent cliEvent;
@@ -74,7 +74,7 @@ void Server::run()
                 //some routine for new user
                 //_users.insert({});
             }
-            else
+            else if (eventlist[i].filter == EVFILT_READ)
             {
                 char buffer[BUFFER_SIZE];
                 int cliSock = eventlist[i].ident;
@@ -85,6 +85,7 @@ void Server::run()
                     EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0); //TODO: why do we have to set EVFILT_READ for this call?
                     changelist.push_back(cliEvent);
                     //delete user from the server 
+                    //close the connection
                 }
                 else
                 {
@@ -93,6 +94,12 @@ void Server::run()
                 }
                 memset(buffer, 0, sizeof(buffer));
             }
+            else if (eventlist[i].filter == EVFILT_WRITE)
+            {
+                
+            }
+            else
+                std::cerr << "[ERROR] Unexpected operations occured!" << std::endl;
         }
     }
 }
