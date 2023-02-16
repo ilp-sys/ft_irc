@@ -1,6 +1,4 @@
 #include "../includes/Server.hpp"
-#include <sys/socket.h>
-#include <vector>
 
 Server& Server::getInstance()
 {
@@ -28,11 +26,20 @@ void Server::servSetup(char *port)
     _servAddress.sin_port = htons(atoi(port));
     _servAddress.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(_servSock, (struct sockaddr *)&_servAddress, sizeof(_servAddress)) == -1) //TODO: address already in use
+    if (bind(_servSock, (struct sockaddr *)&_servAddress, sizeof(_servAddress)) == -1)
         err(EXIT_FAILURE, "failed to bind");
 
     if (listen(_servSock, BACKLOG) == -1)
         err(EXIT_FAILURE, "failed to listen");
+}
+
+void Server::cmdsSetup()
+{
+    _invoker.setCommand("Kick", new Kick());
+    _invoker.setCommand("Join", new Join());
+    _invoker.setCommand("Nick", new Nick());
+    _invoker.setCommand("Quit", new Quit());
+    _invoker.setCommand("Part", new Part());
 }
 
 void Server::run()
@@ -82,7 +89,7 @@ void Server::run()
                 else
                 {
                     //parse the command and stuff..
-                    std::cout << "Received msg: " << buffer << std::endl;
+                    std::cout << "Received msg[" << cliSock << "] " << buffer << std::endl;
                 }
                 memset(buffer, 0, sizeof(buffer));
             }
