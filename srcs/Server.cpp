@@ -69,7 +69,6 @@ void Server::run()
                 struct kevent cliEvent;
                 EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
                 changelist.push_back(cliEvent);
-				        //some routine for new user
                 //_users.insert({});
             }
             else if (eventlist[i].filter & EVFILT_READ)
@@ -85,7 +84,7 @@ void Server::run()
                 }
                 else
                 {
-                    _invoker.commandConnector(eventlist[i].ident, eventlist[i].udata, changelist);
+                    _invoker.commandConnector(eventlist[i].ident, static_cast<const char *>(eventlist[i].udata), changelist);
                 }
                 delete static_cast<char *>(eventlist[i].udata);
             }
