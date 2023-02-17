@@ -5,7 +5,6 @@
 #include <map>
 
 #include "Command.hpp"
-
 #include "User.hpp"
 #include "Join.hpp"
 #include "Kick.hpp"
@@ -20,7 +19,9 @@ class CommandInvoker
     public: 
         void setCommand(std::string commandName, Command* command);
         void executeCommand(std::string commandName, User& user);
+		void commandConnector(const char* message, std::vector<struct kevent> &changelist);
 };
 
+bool	startWith(const char* message, const char* command);
 
 #endif

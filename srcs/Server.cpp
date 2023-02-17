@@ -46,19 +46,18 @@ void Server::run()
 {
     std::vector<struct kevent> changelist;
 
-    struct kevent change;
-    EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, 0);
-    changelist.push_back(change);
+    struct kevent change;//
+	EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, 0);//
+	changelist.push_back(change);
 
     while (true)
     {
-        struct kevent eventlist[MAX_EVENTS];
+        static struct kevent eventlist[MAX_EVENTS];
         int n = kevent(_kq, changelist.data(), changelist.size(), eventlist, MAX_EVENTS, NULL);
         std::cout << n << " events occured!" << std::endl;
         if (n == -1)
             err(EXIT_FAILURE, "failed to fetch events");
         changelist.clear();
-
         for (int i = 0; i < n; ++i)
         {
             if (eventlist[i].ident == _servSock)
@@ -70,8 +69,7 @@ void Server::run()
                 struct kevent cliEvent;
                 EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
                 changelist.push_back(cliEvent);
-
-                //some routine for new user
+				        //some routine for new user
                 //_users.insert({});
             }
             else if (eventlist[i].filter & EVFILT_READ)
@@ -84,7 +82,6 @@ void Server::run()
                     EV_SET(&cliEvent, eventlist[i].ident, EVFILT_READ, EV_DELETE, 0, 0, 0);
                     changelist.push_back(cliEvent);
                     //delete user from the server 
-                    //close the connection
                 }
                 else
                 {
