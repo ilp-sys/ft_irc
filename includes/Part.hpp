@@ -5,7 +5,8 @@
 
 class Part : public Command
 {
-
+    public:
+        void execute(User& user);
 };
 
 #endif

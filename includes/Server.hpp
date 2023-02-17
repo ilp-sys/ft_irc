@@ -8,11 +8,14 @@
 #include <fcntl.h>
 #include <err.h>
 #include <sys/fcntl.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #include <map>
 #include <vector>
 
 #include "User.hpp"
 #include "Channel.hpp"
+#include "CommandInvoker.hpp"
 
 #define BACKLOG 5
 #define MAX_EVENTS 10
@@ -24,15 +27,18 @@ class Server
 
         int _kq;
         int _servSock;
+        CommandInvoker _invoker;
 
         std::map<int, User> _users;
         std::map<std::string, Channel> _channels;
 
         Server(){};
     public:
+
         static Server& getInstance();
 
         void servSetup(char *port);
+        void cmdsSetup();
         void run();
 };
 

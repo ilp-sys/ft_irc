@@ -1,6 +1,5 @@
 #include "../includes/Server.hpp"
 
-
 Server& Server::getInstance()
 {
     return (_server);
@@ -27,11 +26,20 @@ void Server::servSetup(char *port)
     _servAddress.sin_port = htons(atoi(port));
     _servAddress.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(_servSock, (struct sockaddr *)&_servAddress, sizeof(_servAddress)) == -1) //TODO: address already in use
+    if (bind(_servSock, (struct sockaddr *)&_servAddress, sizeof(_servAddress)) == -1)
         err(EXIT_FAILURE, "failed to bind");
 
     if (listen(_servSock, BACKLOG) == -1)
         err(EXIT_FAILURE, "failed to listen");
+}
+
+void Server::cmdsSetup()
+{
+    _invoker.setCommand("Kick", new Kick());
+    _invoker.setCommand("Join", new Join());
+    _invoker.setCommand("Nick", new Nick());
+    _invoker.setCommand("Quit", new Quit());
+    _invoker.setCommand("Part", new Part());
 }
 
 void Server::run()
@@ -55,43 +63,39 @@ void Server::run()
             if (eventlist[i].ident == _servSock)
             {
                 //set the new client socket to nonblock and add it to changelist
-                int cliSock = accept(_servSock, NULL, NULL);
+                int cliSock = accept(_servSock, NULL, NULL); //TODO: handle accept failure
                 if ((fcntl(cliSock, F_SETFL, fcntl(cliSock, F_GETFL) | O_NONBLOCK)) == -1)
                     err(EXIT_FAILURE, "failed to set socket to NONBLOCK");
                 struct kevent cliEvent;
                 EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
                 changelist.push_back(cliEvent);
-				User *newUser = new User(cliSock);
-				_users.insert(cliSock, newUser);	//should i newly allocate?
-				//some routine for new user
+				        //some routine for new user
                 //_users.insert({});
             }
-            else
+            else if (eventlist[i].filter & EVFILT_READ)
             {
-                char buffer[BUFFER_SIZE];
-                int cliSock = eventlist[i].ident;
-                int readByte = recv(cliSock, buffer, sizeof(buffer), 0);
-				std::cout << "readByte: " << readByte << std::endl;
+                eventlist[i].udata = new char[BUFFER_SIZE];
+                int readByte = recv(eventlist[i].ident, eventlist[i].udata, BUFFER_SIZE, 0);
                 if (readByte <= 0)
                 {
                     struct kevent cliEvent;
-                    EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0); //TODO: why do we have to set EVFILT_READ for this call?
+                    EV_SET(&cliEvent, eventlist[i].ident, EVFILT_READ, EV_DELETE, 0, 0, 0);
                     changelist.push_back(cliEvent);
-					_users.erase(_users.find(cliSock));	//지운다
                     //delete user from the server 
-					shutdown(cliSock, SHUT_RDWR);	//may we use it?
-					close(cliSock);
                 }
                 else
                 {
-                    //parse the command and stuff..
-                    std::cout << "Received msg: " << buffer << std::endl;
-					//read -> command handler ->
-					//parse -> 연관된 메세지 호출
-					//
+                    _invoker.commandConnector(eventlist[i].ident, eventlist[i].udata, changelist);
                 }
-                memset(buffer, 0, sizeof(buffer));
+                delete static_cast<char *>(eventlist[i].udata);
             }
+            else if (eventlist[i].filter & EVFILT_WRITE)
+            {
+                int writeByte = send(eventlist[i].ident, eventlist[i].udata, std::strlen((const char*)eventlist[i].udata), 0);
+                //TODO: handle write failure
+            }
+            else
+                std::cerr << "[ERROR] Unexpected operations occured!" << std::endl;
         }
     }
 }

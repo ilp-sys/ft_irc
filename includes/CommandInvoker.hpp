@@ -5,8 +5,13 @@
 #include <map>
 
 #include "Command.hpp"
-
-//command define?
+#include "User.hpp"
+#include "Join.hpp"
+#include "Kick.hpp"
+#include "Part.hpp"
+#include "Quit.hpp"
+#include "Nick.hpp"
+#include "Channel.hpp"
 
 class CommandInvoker
 {
