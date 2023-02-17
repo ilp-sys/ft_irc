@@ -21,7 +21,7 @@ void CommandInvoker::commandConnector(User &user, const std::string& msg, std::v
 		if (startWith(msg, it->first))
 		{
 			//executeCommand(it->first, user);	//userlist, channallist 둘 다 전달해줘야;
-			_commandMap[it->first].execute(user, args)	// 가 구조적으로 맞는 것 같은데...?
+			_commandMap[it->first].execute(user, args)	// 가 구조적으로 맞는 것 같은데...?	//changelist도 전달해줘야...
 			break ;
 		}
 	}
