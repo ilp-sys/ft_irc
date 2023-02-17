@@ -74,29 +74,28 @@ void Server::run()
                 //some routine for new user
                 //_users.insert({});
             }
-            else if (eventlist[i].filter == EVFILT_READ)
+            else if (eventlist[i].filter & EVFILT_READ)
             {
-                char buffer[BUFFER_SIZE];
-                int cliSock = eventlist[i].ident;
-                int readByte = recv(cliSock, buffer, sizeof(buffer), 0);
+                eventlist[i].udata = new char[BUFFER_SIZE];
+                int readByte = recv(eventlist[i].ident, eventlist[i].udata, BUFFER_SIZE, 0);
                 if (readByte <= 0)
                 {
                     struct kevent cliEvent;
-                    EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0); //TODO: why do we have to set EVFILT_READ for this call?
+                    EV_SET(&cliEvent, eventlist[i].ident, EVFILT_READ, EV_DELETE, 0, 0, 0);
                     changelist.push_back(cliEvent);
                     //delete user from the server 
                     //close the connection
                 }
                 else
                 {
-                    //parse the command and stuff..
-                    std::cout << "Received msg[" << cliSock << "] " << buffer << std::endl;
+                    _invoker.commandConnector(eventlist[i].ident, eventlist[i].udata, changelist);
                 }
-                memset(buffer, 0, sizeof(buffer));
+                delete static_cast<char *>(eventlist[i].udata);
             }
-            else if (eventlist[i].filter == EVFILT_WRITE)
+            else if (eventlist[i].filter & EVFILT_WRITE)
             {
-                
+                int writeByte = send(eventlist[i].ident, eventlist[i].udata, std::strlen((const char*)eventlist[i].udata), 0);
+                //TODO: handle write failure
             }
             else
                 std::cerr << "[ERROR] Unexpected operations occured!" << std::endl;
