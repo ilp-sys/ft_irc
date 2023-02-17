@@ -1,6 +1,5 @@
 #include "../includes/Server.hpp"
-#include <sys/socket.h>
-#include <vector>
+
 
 Server& Server::getInstance()
 {
@@ -39,19 +38,18 @@ void Server::run()
 {
     std::vector<struct kevent> changelist;
 
-    struct kevent change;
-    EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, 0);
-    changelist.push_back(change);
+    struct kevent change;//
+	EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, 0);//
+	changelist.push_back(change);
 
     while (true)
     {
-        struct kevent eventlist[MAX_EVENTS];
+        static struct kevent eventlist[MAX_EVENTS];
         int n = kevent(_kq, changelist.data(), changelist.size(), eventlist, MAX_EVENTS, NULL);
         std::cout << n << " events occured!" << std::endl;
         if (n == -1)
             err(EXIT_FAILURE, "failed to fetch events");
         changelist.clear();
-
         for (int i = 0; i < n; ++i)
         {
             if (eventlist[i].ident == _servSock)
@@ -63,8 +61,9 @@ void Server::run()
                 struct kevent cliEvent;
                 EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
                 changelist.push_back(cliEvent);
-
-                //some routine for new user
+				User *newUser = new User(cliSock);
+				_users.insert(cliSock, newUser);	//should i newly allocate?
+				//some routine for new user
                 //_users.insert({});
             }
             else
@@ -72,17 +71,24 @@ void Server::run()
                 char buffer[BUFFER_SIZE];
                 int cliSock = eventlist[i].ident;
                 int readByte = recv(cliSock, buffer, sizeof(buffer), 0);
-                if (readByte < 0)
+				std::cout << "readByte: " << readByte << std::endl;
+                if (readByte <= 0)
                 {
                     struct kevent cliEvent;
                     EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_DELETE, 0, 0, 0); //TODO: why do we have to set EVFILT_READ for this call?
                     changelist.push_back(cliEvent);
+					_users.erase(_users.find(cliSock));	//지운다
                     //delete user from the server 
+					shutdown(cliSock, SHUT_RDWR);	//may we use it?
+					close(cliSock);
                 }
                 else
                 {
                     //parse the command and stuff..
                     std::cout << "Received msg: " << buffer << std::endl;
+					//read -> command handler ->
+					//parse -> 연관된 메세지 호출
+					//
                 }
                 memset(buffer, 0, sizeof(buffer));
             }
