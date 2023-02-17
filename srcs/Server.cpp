@@ -58,6 +58,7 @@ void Server::run()
         if (n == -1)
             err(EXIT_FAILURE, "failed to fetch events");
         changelist.clear();
+
         for (int i = 0; i < n; ++i)
         {
             if (eventlist[i].ident == _servSock)
@@ -69,24 +70,19 @@ void Server::run()
                 struct kevent cliEvent;
                 EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
                 changelist.push_back(cliEvent);
-                //_users.insert({});
+                _users.insert({cliSock, User(cliSock)});
             }
             else if (eventlist[i].filter & EVFILT_READ)
             {
-                eventlist[i].udata = new char[BUFFER_SIZE];
-                int readByte = recv(eventlist[i].ident, eventlist[i].udata, BUFFER_SIZE, 0);
-                if (readByte <= 0)
-                {
-                    struct kevent cliEvent;
-                    EV_SET(&cliEvent, eventlist[i].ident, EVFILT_READ, EV_DELETE, 0, 0, 0);
-                    changelist.push_back(cliEvent);
-                    //delete user from the server 
-                }
-                else
-                {
-                    _invoker.commandConnector(eventlist[i].ident, static_cast<const char *>(eventlist[i].udata), changelist);
-                }
-                delete static_cast<char *>(eventlist[i].udata);
+                char tmp[BUFFER_SIZE];
+                int readByte = recv(eventlist[i].ident, tmp, BUFFER_SIZE, 0);
+                if (readByte < 0) 
+                    _users.erase(eventlist[i].ident);
+                if (readByte != 0)
+                    _users.find(eventlist[i].ident)->second.getBuffer() += tmp;
+                if (*_users.find(eventlist[i].ident)->second.getBuffer().end() == '\n' || \
+                        *_users.find(eventlist[i].ident)->second.getBuffer().end() == '\r')
+                    _invoker.commandConnector(eventlist[i].ident, _users.find(eventlist[i].ident)->second.getBuffer().data(), changelist);
             }
             else if (eventlist[i].filter & EVFILT_WRITE)
             {

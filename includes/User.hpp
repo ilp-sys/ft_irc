@@ -8,17 +8,18 @@ class Channel;
 
 class User
 {
-        int _userSock;	//const int?
+        const int _userSock;
         std::string _nickname;
+        std::string _buffer;
         //std::vector<Channel*> _joinedChannel; //
-		// void	setUserSock(const int& fd);
     public:
         User(int fd);
-		
-		const int& 			getUserSock(void) const;
-		const std::string&	getNickname(void) const;	//const qualifier?
 
-		void	setNickname(const std::string& name);
+        const int getUserSock(void) const;
+        const std::string& getNickname(void) const;
+        std::string& getBuffer(void);
+
+        void setNickname(const std::string& name);
 };
 
 #endif
