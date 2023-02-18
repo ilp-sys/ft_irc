@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     {
         Server& server = Server::getInstance();
         server.servSetup(argv[1]);
-        server.cmdsSetup();
+        // server.cmdsSetup();
         server.run();
     }
     else

@@ -2,7 +2,7 @@
 
 User::User(int fd): _userSock(fd) {};
 
-const int&	User::getUserSock(void) const
+const int	User::getUserSock(void) const
 {
 	return (_userSock);
 }
@@ -10,6 +10,11 @@ const int&	User::getUserSock(void) const
 const std::string&	User::getNickname(void) const
 {
 	return (_nickname);
+}
+
+std::string& User::getBuffer(void)
+{
+    return (_buffer);
 }
 
 void	User::setNickname(const std::string& name)

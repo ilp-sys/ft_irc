@@ -33,14 +33,14 @@ void Server::servSetup(char *port)
         err(EXIT_FAILURE, "failed to listen");
 }
 
-void Server::cmdsSetup()
-{
-    _invoker.setCommand("Kick", new Kick());
-    _invoker.setCommand("Join", new Join());
-    _invoker.setCommand("Nick", new Nick());
-    _invoker.setCommand("Quit", new Quit());
-    _invoker.setCommand("Part", new Part());
-}
+// void Server::cmdsSetup()
+// {
+//     _invoker.setCommand("Kick", new Kick());
+//     _invoker.setCommand("Join", new Join());
+//     _invoker.setCommand("Nick", new Nick());
+//     _invoker.setCommand("Quit", new Quit());
+//     _invoker.setCommand("Part", new Part());
+// }
 
 void Server::run()
 {
@@ -58,43 +58,82 @@ void Server::run()
         if (n == -1)
             err(EXIT_FAILURE, "failed to fetch events");
         changelist.clear();
+
+		// handle eventlist
         for (int i = 0; i < n; ++i)
         {
-            if (eventlist[i].ident == _servSock)
-            {
-                //set the new client socket to nonblock and add it to changelist
-                int cliSock = accept(_servSock, NULL, NULL); //TODO: handle accept failure
-                if ((fcntl(cliSock, F_SETFL, fcntl(cliSock, F_GETFL) | O_NONBLOCK)) == -1)
-                    err(EXIT_FAILURE, "failed to set socket to NONBLOCK");
-                struct kevent cliEvent;
-                EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
-                changelist.push_back(cliEvent);
-                //_users.insert({});
-            }
-            else if (eventlist[i].filter & EVFILT_READ)
-            {
-                eventlist[i].udata = new char[BUFFER_SIZE];
-                int readByte = recv(eventlist[i].ident, eventlist[i].udata, BUFFER_SIZE, 0);
-                if (readByte <= 0)
-                {
-                    struct kevent cliEvent;
-                    EV_SET(&cliEvent, eventlist[i].ident, EVFILT_READ, EV_DELETE, 0, 0, 0);
-                    changelist.push_back(cliEvent);
-                    //delete user from the server 
-                }
-                else
-                {
-                    _invoker.commandConnector(eventlist[i].ident, static_cast<const char *>(eventlist[i].udata), changelist);
-                }
-                delete static_cast<char *>(eventlist[i].udata);
-            }
-            else if (eventlist[i].filter & EVFILT_WRITE)
-            {
-                int writeByte = send(eventlist[i].ident, eventlist[i].udata, std::strlen((const char*)eventlist[i].udata), 0);
-                //TODO: handle write failure
-            }
-            else
-                std::cerr << "[ERROR] Unexpected operations occured!" << std::endl;
+			if (eventlist[i].flags & EV_EOF)
+				this->handleEof(eventlist[i]);
+			else if (eventlist[i].flags & EV_ERROR)
+				this->handleError(eventlist[i]);
+			else{
+				if (eventlist[i].ident == _servSock)
+					this->acceptUser(changelist);
+				else if (eventlist[i].filter & EVFILT_READ)
+					this->handleRead(eventlist[i]);
+				else if (eventlist[i].filter & EVFILT_WRITE)
+					this->handleWrite(eventlist[i]);
+				else{
+					PRINT_LOG(eventlist[i].ident, "SERVER: Unexpected Event Occured!", R);
+					PRINT_EVENT(eventlist[i].ident, eventlist[i].flags, eventlist[i].filter, eventlist[i].fflags, eventlist[i].data, eventlist[i].udata, R);
+				}
+			}
         }
     }
 }
+
+void Server::handleEof(struct kevent &k){
+	PRINT_LOG(k.ident, "SERVER : flags EOF, User disconnected", R);
+	// PRINT_EVENT(k.ident, k.flags, k.filter, k.fflags, k.data, k.udata, R);
+	close(k.ident);
+}
+
+void Server::handleError(struct kevent &k){
+	PRINT_LOG(k.ident, "SERVER : flags ERROR", R);
+	PRINT_EVENT(k.ident, k.flags, k.filter, k.fflags, k.data, k.udata, R);
+	close(k.ident);
+};
+
+void Server::acceptUser(std::vector<struct kevent> &changelist){
+	int cliSock = accept(_servSock, NULL, NULL); //TODO: handle accept failure
+	if ((fcntl(cliSock, F_SETFL, fcntl(cliSock, F_GETFL) | O_NONBLOCK)) == -1)
+		err(EXIT_FAILURE, "failed to set socket to NONBLOCK");
+	struct kevent cliEvent;
+	EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
+	changelist.push_back(cliEvent);
+	_users.insert(std::make_pair(cliSock, User(cliSock)));
+	PRINT_LOG(cliSock, "SERVER : Accept user", B);
+};
+
+void Server::handleRead(struct kevent &k){
+	char tmp[BUFFER_SIZE];
+	memset(tmp, 0, BUFFER_SIZE);
+	int readByte = recv(k.ident, tmp, BUFFER_SIZE, 0);
+	if (readByte < 0){
+		// TODO : disconnect process like QUIT command..?.
+		_users.erase(k.ident);
+	}
+	if (readByte != 0){
+		_users.find(k.ident)->second.getBuffer() += tmp;
+		PRINT_MSG(k.ident, "server receive tmp_msg ", tmp, Y);
+	}
+	// TODO : let me know why '\r' || '\n'   --------- @wsehyeon
+	// NOTE : end() is past the last element... ------ @wsehyeon
+	// if (*_users.find(k.ident)->second.getBuffer().end() == '\n' || \
+	// 		*_users.find(k.ident)->second.getBuffer().end() == '\r')
+
+	// WARNING! back() is C++11 function... we need to find better 
+	if (_users.find(k.ident)->second.getBuffer().back() == '\n' || \
+			_users.find(k.ident)->second.getBuffer().back() == '\r'){
+		std::cout << "call invoker.... excute command...." << std::endl;
+		PRINT_MSG(k.ident, "server recive full_msg ", _users.find(k.ident)->second.getBuffer(), G);
+		// _invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
+		// TODO : After excute command, need User buffer clear. 
+		_users.find(k.ident)->second.getBuffer().clear(); // 여기서 클리어하는게 눈에 잘보여서 좋지않나용?
+	}
+};
+
+void Server::handleWrite(struct kevent &k){
+	int writeByte = send(k.ident, k.udata, std::strlen((const char*)k.udata), 0);
+	//TODO: handle write failure
+};
