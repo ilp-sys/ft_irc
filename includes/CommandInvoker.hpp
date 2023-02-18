@@ -15,6 +15,7 @@
 
 class CommandInvoker
 {
+		std::vector<std::string> _input;
         std::map<std::string, Command *> _commandMap;
     public: 
         void setCommand(std::string commandName, Command* command);
@@ -22,6 +23,6 @@ class CommandInvoker
         void commandConnector(int ident, const char* message, std::vector<struct kevent> &changelist);
 };
 
-bool	startWith(const char* message, const char* command);
+// bool	startWith(const char* message, const char* command);
 
 #endif

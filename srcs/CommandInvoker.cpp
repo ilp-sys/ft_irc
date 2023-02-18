@@ -11,24 +11,42 @@ void CommandInvoker::executeCommand(std::string commandName, User &user)
     command->execute(user);
 }
 
-void CommandInvoker::commandConnector(User &user, const std::string& msg, std::vector<struct kevent>& changelist;)	//event가 들어올 수 있다 //execute Command 가 User를 받는다?!
+void CommandInvoker::commandConnector(int ident, const char* message, std::vector<struct kevent> &changelist)
 {
 	//tree를 순회하면서
 	// Server& server = Server::getInstance();
+	parseString(message);	//automatic?
 	std::map<int, std::string>::iterator it;
 	for (it = _commandMap.begin(); it != _commandMap.end(); it++)
 	{	
-		if (startWith(msg, it->first))
+		if (it->first == _input[0])
 		{
 			//executeCommand(it->first, user);	//userlist, channallist 둘 다 전달해줘야;
-			_commandMap[it->first].execute(user, args)	// 가 구조적으로 맞는 것 같은데...?	//changelist도 전달해줘야...
+			_commandMap.find(it->first)->second.execute(ident, _input, changelist);	// 가 구조적으로 맞는 것 같은데...?	//changelist도 전달해줘야...
 			break ;
 		}
 	}
 	//throw noSuchCommand exception
 }
 
-bool	startWith(const char *msg, const char *prefix)
+// bool	startWith(const char *msg, const char *prefix)
+// {
+// 	return (msg.compare(prefix) == 0 && msg.size() >= prefix.size());
+// }
+
+void parseString(const std::string& msg)
 {
-	return (msg.compare(prefix) == 0 && msg.size() >= prefix.size());
+    size_t  firstpos;
+    size_t  lastpos;
+    
+    _input.clear();
+    start = 0;
+    while (start != msg.length())
+    {
+        end = msg.find(" ", start);
+        if (end-start > 1)
+			_input.push_back(msg.substr(start, end))
+        end++;
+        start = end;
+    }
 }

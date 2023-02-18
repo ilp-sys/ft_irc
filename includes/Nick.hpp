@@ -3,10 +3,11 @@
 
 #include "Command.hpp"
 
-class Nick : public Command
+class Nick : protected Command	//private?
 {
     public:
-        void execute(User& user);
+        void execute(int ident, std::vector<std::string>& cmdlist, std::vector<struct kevent>& changelist);
+		bool	isUnique(const std::string& kickname, const std::map<int, User>& userlist) const;
 };
 
 #endif
