@@ -12,7 +12,15 @@
 
 # define PRINT_MSG(fd, str, buffer, color) std::cout << color <<  str << "[" << fd << "]: " << buffer << N << std::endl;
 
-# define PRINT_EVENT(ident, flags, filter, fflags, data, udata, color) std::cout << color << "[" << ident << "]: "\
-                        << flags << " " << filter << " " << fflags << " " << data << " " << udata << " " <<  N << std::endl;
+# define PRINT_EVENT(ident, flags, filter, fflags, data, udata, color)\
+	std::cout << color \
+	<< "--------socket[" << ident << "]--------"\
+    << "\nflags: " << flags \
+	<< "\nfilter " << filter \
+	<< "\nfflags " << fflags \
+	<< "\ndata " << data \
+	<< "\nudata " << udata \
+	<< "\n-------------------------" \
+	<< N << std::endl;
 
 #endif

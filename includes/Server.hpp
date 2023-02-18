@@ -16,6 +16,7 @@
 #include "User.hpp"
 #include "Channel.hpp"
 #include "CommandInvoker.hpp"
+#include "Define.hpp"
 
 #define BACKLOG 5
 #define MAX_EVENTS 10
@@ -33,6 +34,22 @@ class Server
         std::map<std::string, Channel> _channels;
 
         Server(){};
+		
+		// handle socket EOF (EOF means disconnect)
+		void handleEof(struct kevent &k);
+
+		// event ERROR, print kevent status
+		void handleError(struct kevent &k);
+
+		//set the new client socket to nonblock and add it to changelist
+		void acceptUser(std::vector<struct kevent> &changelist);
+
+		// recv
+		void handleRead(struct kevent &k);
+
+		// send
+		void handleWrite(struct kevent &k);
+
     public:
 
         static Server& getInstance();

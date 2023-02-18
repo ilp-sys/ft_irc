@@ -17,6 +17,8 @@ class Command
 		// {
 		// 	const char* what() const throw();
 		// };
+	public:
+		Command();
 };
 
 #endif
