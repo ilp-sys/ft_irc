@@ -15,6 +15,9 @@ void Server::servSetup(char *port)
     if ((_servSock = socket(PF_INET, SOCK_STREAM, 0)) == -1)
         err(EXIT_FAILURE, "failed to create server socket");
 
+	//set commandInvoker
+	_invoker = CommandInvoker();
+
     int value = true;
     setsockopt(_servSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
 
@@ -137,3 +140,6 @@ void Server::handleWrite(struct kevent &k){
 	int writeByte = send(k.ident, k.udata, std::strlen((const char*)k.udata), 0);
 	//TODO: handle write failure
 };
+
+std::map<int, User>&	Server::getUserMap(){ return (_users); }
+

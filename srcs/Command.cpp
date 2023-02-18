@@ -1,6 +1,7 @@
 #include "../includes/Command.hpp"
 
-Command::Command() : _requiredArgsNumber(1){}
+//error: constructor for 'Command' must explicitly initialize the const member '_requiredArgsNumber'?????
+Command::Command(int argnum) : _requiredArgsNumber(argnum){};
 
 bool	Command::checkArgs(std::vector<std::string>& cmdlist)
 {

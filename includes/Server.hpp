@@ -28,7 +28,7 @@ class Server
 
         int _kq;
         int _servSock;
-        CommandInvoker _invoker;
+		CommandInvoker _invoker;	//unknown type name - include를 했는데 왜 못 쓰지?
 
         std::map<int, User> _users;
         std::map<std::string, Channel> _channels;
@@ -57,6 +57,7 @@ class Server
         void servSetup(char *port);
         void cmdsSetup();
         void run();
+		std::map<int, User>&	getUserMap();
 };
 
 #endif

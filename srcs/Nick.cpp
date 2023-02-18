@@ -1,35 +1,36 @@
 #include "../includes/Nick.hpp"
-#include "../includes/Command.hpp"
-#include "../includes/Server.hpp"
-#include "../includes/User.hpp"
 
-Nick() : _requiredArgsNumber(2){}
 
-void Nick::execute(int ident, std::vector<std::string>& cmdlist, std::vector<struct kevent>& changelist)
+Nick::Nick() : Command(2){};
+
+int Nick::execute(std::vector<std::string>& cmdlist, User& user, std::vector<struct kevent>& changelist, std::map<std::string, Channel>& channels)
 {
 	
-	Server 	&server = getInstance();
-	User	&user = *(server._users.find(ident));	//?
-	std::string	msg;
+	Server 	&server = Server::getInstance();
+	// User	&user = *(server._users.find(ident));	//?
 	
-	if (checkArgs(cmdlist) && isUnique(nickname, server->users))
-	{
-		std::string prevName;
-		prevName = user.getNickname();
-		user.setNickname(cmdlist[1]);
-	//성공 시 write	//여기서 root도 다른 이름인 듯
-		msg = ":" + prevName + "!" + "root" + "@127.0.0.1" + "NICK :" + cmdlist[1];
+	// if (!checkArgs(cmdlist))
+	// 	return (1);	//errcode enum으로 관리	// args err 는 command에서 관리
+	if (!isUnique(cmdlist[1], server.getUserMap()))
+	{	// msg = ":" + "irc.local" + "433" + "root " + user.getNickname() + " :Nickname is already in use.";
+		return (2);
 	}
 	else
-		msg = ":" + "irc.local" + "433" + "root " + user.getNickname() + " :Nickname is already in use.";
-	makeWriteEvent(ident, changelist, &msg);
+	{
+		std::string prevName = user.getNickname();
+		user.setNickname(cmdlist[1]);
+		//성공 시 write	//여기서 root도 다른 이름인 듯
+		const std::string	msg = ":" + prevName + "!" + "root" + "@127.0.0.1" + "NICK :" + cmdlist[1];
+		makeWriteEvent(user.getUserSock(), changelist, msg);
+		return (0);
+	}
 }
 
 bool	Nick::isUnique(const std::string& nickname, const std::map<int, User>& userMap) const
 {
-	std::map::iterator	it;
-	for (it = userMap.begin(); it != userMap.end(); it++)
-		if (it->second->getNickname() == nickname)
+	std::map<int, User>::const_iterator	it = userMap.begin();
+	for (; it != userMap.end(); it++)
+		if (it->second.getNickname() == nickname)
 			return (false);
 	return (true);
 }

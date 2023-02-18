@@ -6,14 +6,14 @@ CommandInvoker::CommandInvoker()
 {
 	//여기서 CommandMap 초기 세팅
 	// _channels/changelist 세팅(만약에 한다면)?
-	addCommand("Nick", Nick());	//그러면...? 여기서 개별 command header 다 가지고 있어야...
+	addCommand("Nick", &(Nick()));	//그러면...? 여기서 개별 command header 다 가지고 있어야...
 	//server가 changelist 가지고 있으면 안 되냐구 흑흑
 	// _channels = getInstance().getChannel();
 }
 
 void CommandInvoker::addCommand(std::string commandName, Command *command)
 {
-	_commandMap.insert(commandName, command);
+	_commandMap.insert(std::make_pair(commandName, command));
 }
 
 // void CommandInvoker::setCommand(std::string commandName, Command *command)
@@ -21,13 +21,13 @@ void CommandInvoker::addCommand(std::string commandName, Command *command)
 // 	_commandMap[commandName] = command;
 // }
 
-bool CommandInvoker::executeCommand(std::vector(std::string> &cmdline, User &user))
+int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, User &user, std::vector<struct kevent>& changelist, std::map<std::string, Channel>& channels)
 {
 	int	res;
 
-	if (_commandMap.find(cmdline[0]) == std::map::end)
+	if (_commandMap.find(cmdline[0]) == _commandMap.end())
 	{
-			//no such command errmsg;
+		//write no such command errmsg; ???
 		return (-1);
 	}
 	else
