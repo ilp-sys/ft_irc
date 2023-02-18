@@ -1,21 +1,42 @@
 #include "../includes/CommandInvoker.hpp"
+#include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
 
-// CommandInvoker::CommandInvoker()
-// {
-// 	//여기서 CommandMap 초기 세팅, _channels/changelist 세팅(만약에 한다면)?
-// }
+CommandInvoker::CommandInvoker()
+{
+	//여기서 CommandMap 초기 세팅
+	// _channels/changelist 세팅(만약에 한다면)?
+	addCommand("Nick", Nick());	//그러면...? 여기서 개별 command header 다 가지고 있어야...
+	//server가 changelist 가지고 있으면 안 되냐구 흑흑
+	// _channels = getInstance().getChannel();
+}
+
+void CommandInvoker::addCommand(std::string commandName, Command *command)
+{
+	_commandMap.insert(commandName, command);
+}
 
 // void CommandInvoker::setCommand(std::string commandName, Command *command)
 // {
 // 	_commandMap[commandName] = command;
 // }
 
-// void CommandInvoker::executeCommand(std::string commandName, User &user)
-// {
-// 	Command* command = _commandMap[commandName];
-// 	command->execute(user);
-// }
+bool CommandInvoker::executeCommand(std::vector(std::string> &cmdline, User &user))
+{
+	int	res;
+
+	if (_commandMap.find(cmdline[0]) == std::map::end)
+	{
+			//no such command errmsg;
+		return (-1);
+	}
+	else
+	{
+		Command *command = _commandMap.find(cmdline[0])->second;	//std::map::end의 value 참조는 undefined behavior)
+		return (command->execute(cmdline, user, changelist, channels));	//cmdline 2번째 인자부터 끝까지 넘길 수 있는지?
+			//실제로는 error 더욱 다양... => bool 외에 errcode 써야
+	}
+}
 
 
 void	CommandInvoker::parseString(const std::string& raw, std::vector<std::string>& cmds)
