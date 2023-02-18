@@ -70,7 +70,7 @@ void Server::run()
 				if (eventlist[i].ident == _servSock)
 					this->acceptUser(changelist);
 				else if (eventlist[i].filter & EVFILT_READ)
-					this->handleRead(eventlist[i]);
+					this->handleRead(eventlist[i], changelist);
 				else if (eventlist[i].filter & EVFILT_WRITE)
 					this->handleWrite(eventlist[i]);
 				else{
@@ -105,7 +105,7 @@ void Server::acceptUser(std::vector<struct kevent> &changelist){
 	PRINT_LOG(cliSock, "SERVER : Accept user", B);
 };
 
-void Server::handleRead(struct kevent &k){
+void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist){
 	char tmp[BUFFER_SIZE];
 	memset(tmp, 0, BUFFER_SIZE);
 	int readByte = recv(k.ident, tmp, BUFFER_SIZE, 0);
@@ -127,7 +127,7 @@ void Server::handleRead(struct kevent &k){
 			_users.find(k.ident)->second.getBuffer().back() == '\r'){
 		std::cout << "call invoker.... excute command...." << std::endl;
 		PRINT_MSG(k.ident, "server recive full_msg ", _users.find(k.ident)->second.getBuffer(), G);
-		// _invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
+		_invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
 		// TODO : After excute command, need User buffer clear. 
 		_users.find(k.ident)->second.getBuffer().clear(); // 여기서 클리어하는게 눈에 잘보여서 좋지않나용?
 	}

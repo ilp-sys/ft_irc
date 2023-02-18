@@ -1,56 +1,81 @@
 #include "../includes/CommandInvoker.hpp"
+#include "../includes/Server.hpp"
 
-void CommandInvoker::setCommand(std::string commandName, Command *command)
-{
-	_commandMap[commandName] = command;
-}
-
-void CommandInvoker::executeCommand(std::string commandName, User &user)
-{
-	Command* command = _commandMap[commandName];
-	command->execute(user);
-}
-
-void CommandInvoker::commandConnector(int ident, const std::string& message, std::vector<struct kevent> &changelist)
-{
-	//tree를 순회하면서
-	// Server& server = Server::getInstance();
-	parseString(message);	//automatic?
-	std::map<int, std::string>::iterator it;
-	for (it = _commandMap.begin(); it != _commandMap.end(); it++)
-	{	
-	if (it->first == _input[0])
-	{
-	//executeCommand(it->first, user);	//userlist, channallist 둘 다 전달해줘야;
-	_commandMap.find(it->first)->second.execute(ident, _input, changelist);	// 가 구조적으로 맞는 것 같은데...?	//changelist도 전달해줘야...
-	break ;
-	}
-	}
-	//throw noSuchCommand exception
-}
-
-// bool	startWith(const char *msg, const char *prefix)
+// CommandInvoker::CommandInvoker()
 // {
-// 	return (msg.compare(prefix) == 0 && msg.size() >= prefix.size());
+// 	//여기서 CommandMap 초기 세팅, _channels/changelist 세팅(만약에 한다면)?
 // }
 
-void	parseString(const std::string& msg)
+// void CommandInvoker::setCommand(std::string commandName, Command *command)
+// {
+// 	_commandMap[commandName] = command;
+// }
+
+// void CommandInvoker::executeCommand(std::string commandName, User &user)
+// {
+// 	Command* command = _commandMap[commandName];
+// 	command->execute(user);
+// }
+
+
+void	CommandInvoker::parseString(const std::string& raw, std::vector<std::string>& cmds)
+{
+	size_t	idx = 0;
+	size_t	len = 0;
+	size_t	end = raw.length();
+
+	cmds.clear();
+	while (idx < end)
+	{
+		while (raw[idx + len] != '\n' && raw[idx + len] != '\r' && raw[idx + len] != '\0')
+			len++;
+		if (len > 0)
+			cmds.push_back(raw.substr(idx, len));
+		idx += (len + 1);
+		len = 0;
+	}
+}
+
+void	CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>& cmdline)	//개행이나 /r처리해야
 {
 	size_t idx = 0;
 	size_t len = 0;
 	size_t end = msg.length();
+	// std::vector<std::string> args;	//좀 더 좋은방법 없나...?
 
+	cmdline.clear();
 	while (idx < end)
 	{
 		while (msg[idx + len] != ' ' && msg[idx + len] != ':' && msg[idx + len] != '\0')
 			len++;
-		_input.push_back(msg.substr(idx, len));
+		cmdline.push_back(msg.substr(idx, len));
 		if (msg[idx + len] == ':')
 		{
-			_input.push_back(msg.substr(idx + len));
+			cmdline.push_back(msg.substr(idx + len));
 			break ;
 		}
 		idx += (len + 1);
 		len = 0;
+	}
+	//여기서 명령어 호출
+}
+
+void CommandInvoker::commandConnector(int ident, const std::string& message, std::vector<struct kevent> &changelist)
+{
+	Server& server = Server::getInstance();	//이렇게 하는거랑 Class Server; 이렇게 선언하는 것의 작동 차이?
+	std::vector<std::string> commands;
+	std::vector<std::string> cmdline;
+
+	parseString(message, commands);	//개행을 삭제해서 command 단위로 나눠준다
+	std::vector<std::string>::iterator	it;	//command를 순서대로 parse -> 실행
+	for (it = commands.begin(); it < commands.end(); it++)
+	{
+		parseLine(*it, cmdline);
+		//executeCommand(//User, cmdlist, changelist, channel)	//만약 앞의 커맨드에서 실패한다면?
+		std::vector<std::string>::iterator	jt;
+		jt = cmdline.begin();
+		for (; jt < cmdline.end(); jt++)
+			std::cout << *jt << std::endl;
+		std::cout << std::endl;
 	}
 }

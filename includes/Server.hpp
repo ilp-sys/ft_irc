@@ -45,7 +45,7 @@ class Server
 		void acceptUser(std::vector<struct kevent> &changelist);
 
 		// recv
-		void handleRead(struct kevent &k);
+		void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
 
 		// send
 		void handleWrite(struct kevent &k);

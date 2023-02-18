@@ -10,7 +10,10 @@ class User
 {
         const int _userSock;
         std::string _nickname;
+        std::vector<std::string> _userInfo;
         std::string _buffer;
+		bool	isPassed;
+		bool	isRegistered;
         //std::vector<Channel*> _joinedChannel; //
     public:
         User(int fd);
