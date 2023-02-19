@@ -38,4 +38,38 @@
 	<< "Socket[" << ident << "] filter : " << filter \
 	<< N << std::endl;
 
+//unknown command
+#define ERR_UNKNOWNCOMMAND(user, cmd) \
+    (std::string(":ircserv 421 ") + std::string(user) + std::string(" ") + std::string(cmd) + " :Unknown command")
+
+//pass, user
+#define ERR_NEEDMOREPARAMS(user, cmd) \
+    (std::string(":ircserv 461 ") + std::string(user) + std::string(" ") + std::string(cmd) + " :Not enough parameters")
+
+//nick
+#define ERR_ERRONEOUSNICKNAME(user, nick)
+    (std::string(":ircserv 432 ") + std::string(user) + std::string(" ") + std::string(nick) + " :Erroneous Nickname")
+
+#define ERR_NICKNAMEINUSE(user, cmd) //nick
+                                     //
+#define ERR_NICKCOLLISION(user, cmd) //nick
+                          
+#define ERR_NOSUCHCHANNEL(user, cmd) //join , part, kick
+                    
+#define ERR_NOTONCHANNEL(user, cmd) //part, kick
+
+#define ERR_CHANOPRIVSNEEDED(user, cmd) // kick
+
+#define ERR_NORECIPIENT(user, cmd) //privmsg, notice
+
+#define ERR_NOTEXTTOSEND(user, cmd) //privmsg, notice
+
+#define ERR_NOSUCHNICK(user, cmd) //privmsg, notice
+                       
+#define ERR_NOORIGIN(user, cmd) //ping, pong
+
+#define ERR_NOSUCHSERVER(user, cmd) //ping, pong
+
+#define SUCCESS_REPL(user, cmd)
+
 #endif
