@@ -2,6 +2,7 @@
 #define __SERVER_HPP__
 
 #include <iostream>
+#include <string>
 #include <sys/event.h>
 #include <arpa/inet.h>
 #include <sys/event.h>
@@ -30,6 +31,7 @@ class Server
         int _servSock;
         CommandInvoker _invoker;
 
+        std::string _password;
         std::map<int, User> _users;
         std::map<std::string, Channel> _channels;
 
@@ -57,6 +59,9 @@ class Server
         void servSetup(char *port);
         void cmdsSetup();
         void run();
+        
+        void setPswd(std::string);
+        std::string getPswd() const;
 };
 
 #endif

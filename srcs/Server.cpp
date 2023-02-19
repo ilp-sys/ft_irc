@@ -137,3 +137,13 @@ void Server::handleWrite(struct kevent &k){
 	int writeByte = send(k.ident, k.udata, std::strlen((const char*)k.udata), 0);
 	//TODO: handle write failure
 };
+
+void Server::setPswd(std::string pswd)
+{
+    _password = pswd;
+}
+
+std::string Server::getPswd() const
+{
+    return (_password);
+}
