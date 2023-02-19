@@ -144,6 +144,16 @@ void Server::handleWrite(struct kevent &currEvent, std::vector<struct kevent> &c
 	changelist.push_back(wEvent);
 };
 
+void Server::setPswd(std::string pswd)
+{
+    _password = pswd;
+}
+
+std::string Server::getPswd() const
+{
+    return (_password);
+}
+
 // 일단 서버와 소통이 되는지 확인하기 위해서 만든 테스트 함수
 void Server::testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist){
 	PRINT_MSG(currEvent.ident, "Socket", _users.find(currEvent.ident)->second.getBuffer(), G);
