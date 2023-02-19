@@ -45,10 +45,14 @@ class Server
 		void acceptUser(std::vector<struct kevent> &changelist);
 
 		// recv
-		void handleRead(struct kevent &k);
+		void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
 
 		// send
-		void handleWrite(struct kevent &k);
+		void handleWrite(struct kevent &k, std::vector<struct kevent> &changelist);
+
+    // test function
+    void testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist);
+
 
     public:
 
