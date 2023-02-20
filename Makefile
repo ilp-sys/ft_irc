@@ -7,7 +7,7 @@ RM				:= rm
 RMFLAGS     	:= -rf
 
 SRCDIR			:= ./srcs/
-SRCNAME 		:= main.cpp Server.cpp User.cpp
+SRCNAME 		:= main.cpp Server.cpp User.cpp CommandInvoker.cpp Nick.cpp Command.cpp
 SRCS			:= $(addprefix $(SRCDIR), $(SRCNAME))
 
 OBJDIR			:= ./obj/

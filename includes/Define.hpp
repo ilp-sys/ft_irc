@@ -31,7 +31,7 @@
 	<< "\n-------------------------" \
 	<< N << std::endl;
 
-# define FILTER(f) (f == -1) ? 'W' : 'R'
+# define FILTER(f) (f == -1) ? 'R' : 'W'
 
 # define PRINT_FILTER(ident, filter, color) \
 	std::cout << color \

@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
         Server& server = Server::getInstance();
         server.servSetup(argv[1]);
         server.setPswd(argv[2]);
-        // server.cmdsSetup();
         server.run();
     }
     else

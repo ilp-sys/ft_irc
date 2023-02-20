@@ -16,8 +16,6 @@ class CommandInvoker
 		void	parseString(const std::string& str, std::vector<std::string>& target);
 	public: 
 		CommandInvoker();
-		void	addCommand(std::string commandName, Command* command);	//commandInvoker 만들때마다 set? or server setting 수준에서 set?
-		// void	setCommand(std::string commandName, Command* command);	//commandInvoker 만들때마다 set? or server setting 수준에서 set?
 		int 	executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
 		void	commandConnector(int ident, const std::string& message, std::vector<struct kevent>& changelist);
 };
