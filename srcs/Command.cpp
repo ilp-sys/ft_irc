@@ -1,11 +1,22 @@
 #include "../includes/Command.hpp"
 
-Command::Command() : _requiredArgsNumber(0){}
+Command::Command() : _requiredArgsNumber(1){}
+Command::Command(int argnum) : _requiredArgsNumber(argnum){}
 
-void	Command::checkArgs(int argsNum)
+bool	Command::checkArgs(std::vector<std::string>& cmdlist)
 {
-	if (_requiredArgsNumber > argsNum)
-		throw checkArgs::NotEnoughArgsError();
+	if (_requiredArgsNumber > cmdlist.size())
+		return (false);
+	//형식 체크 - 숫자가 있어야 한다거나.. etc
+	//너무 많은 인자가 들어왔다거나
+	return (true);
+}
+
+void	Command::makeWriteEvent(int ident, std::vector<struct kevent>& changelist, std::string& msg)//static_cast<void *> //string or char *?
+{
+	struct kevent	event;
+	EV_SET(&event, ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, static_cast<void *>(&msg));	//possible?
+	changelist.push_back(event);	//여기서 string을 전달해줘야 하는데...?
 }
 
 // const char* Command::NotEnoughArgsError::what() const throw()

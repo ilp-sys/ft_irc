@@ -15,6 +15,9 @@ void Server::servSetup(char *port)
     if ((_servSock = socket(PF_INET, SOCK_STREAM, 0)) == -1)
         err(EXIT_FAILURE, "failed to create server socket");
 
+	//set commandInvoker
+	// _invoker = CommandInvoker();
+
     int value = true;
     setsockopt(_servSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
 
@@ -124,10 +127,13 @@ void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist
 	// WARNING! back() is C++11 function... we need to find better 
 	if (_users.find(k.ident)->second.getBuffer().back() == '\n' || \
 			_users.find(k.ident)->second.getBuffer().back() == '\r'){
-		// PRINT_MSG(k.ident, "server recive full_msg ", _users.find(k.ident)->second.getBuffer(), G);
-		testServer(k, changelist);
-		// _invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
-		_users.find(k.ident)->second.getBuffer().clear(); // 여기서 클리어하는게 눈에 잘보여서 좋지않나용?
+
+		PRINT_MSG(k.ident, "server recive full_msg ", _users.find(k.ident)->second.getBuffer(), G);
+		_invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
+		testServer(k, changelist); //TODO: testServer가 뭔가영
+    
+		_users.find(k.ident)->second.getBuffer().clear();
+		std::cout << R << "Out of line" << std::endl;
 	}
 };
 
@@ -144,6 +150,9 @@ void Server::handleWrite(struct kevent &currEvent, std::vector<struct kevent> &c
 	changelist.push_back(wEvent);
 };
 
+
+std::map<int, User>&	Server::getUserMap(){ return (_users); }
+
 void Server::setPswd(std::string pswd)
 {
     _password = pswd;
@@ -154,7 +163,6 @@ std::string Server::getPswd() const
     return (_password);
 }
 
-// 일단 서버와 소통이 되는지 확인하기 위해서 만든 테스트 함수
 void Server::testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist){
 	PRINT_MSG(currEvent.ident, "Socket", _users.find(currEvent.ident)->second.getBuffer(), G);
 	struct kevent wEvent;
@@ -163,3 +171,4 @@ void Server::testServer(struct kevent &currEvent, std::vector<struct kevent> &ch
 	wEvent.udata = (void *)mydata;
 	changelist.push_back(wEvent);
 }
+

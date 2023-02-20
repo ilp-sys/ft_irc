@@ -29,7 +29,7 @@ class Server
 
         int _kq;
         int _servSock;
-        CommandInvoker _invoker;
+		    CommandInvoker _invoker;
 
         std::string _password;
         std::map<int, User> _users;
@@ -63,9 +63,12 @@ class Server
         void servSetup(char *port);
         void cmdsSetup();
         void run();
+
+		    std::map<int, User>&	getUserMap();
         
         void setPswd(std::string);
         std::string getPswd() const;
+
 };
 
 #endif

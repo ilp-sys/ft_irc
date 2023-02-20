@@ -1,34 +1,106 @@
 #include "../includes/CommandInvoker.hpp"
+#include "../includes/Nick.hpp"
+#include "../includes/Server.hpp"
 
-void CommandInvoker::setCommand(std::string commandName, Command *command)
+class Server;	//이렇게 이용 가능?
+
+
+CommandInvoker::CommandInvoker()
 {
-    _commandMap[commandName] = command;
+	//여기서 CommandMap 초기 세팅
+	Nick	nick;	//이 scope에서만 유효하지 않나요 멤버변수로 등록....?
+	addCommand("Nick", &nick);	//그러면...? 여기서 개별 command header 다 가지고 있어야...
+	//server가 changelist 가지고 있으면 안 되냐구 흑흑
+	// _channels = getInstance().getChannel();
 }
 
-void CommandInvoker::executeCommand(std::string commandName, User &user)
+void CommandInvoker::addCommand(std::string commandName, Command* command)
 {
-    Command* command = _commandMap[commandName];
-    command->execute(user);
+	_commandMap.insert(std::make_pair<std::string, Command*>(commandName, command));
 }
 
-void CommandInvoker::commandConnector(User &user, const std::string& msg, std::vector<struct kevent>& changelist;)	//event가 들어올 수 있다 //execute Command 가 User를 받는다?!
+// void CommandInvoker::setCommand(std::string commandName, Command *command)
+// {
+// 	_commandMap[commandName] = command;
+// }
+
+int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-	//tree를 순회하면서
-	// Server& server = Server::getInstance();
-	std::map<int, std::string>::iterator it;
-	for (it = _commandMap.begin(); it != _commandMap.end(); it++)
-	{	
-		if (startWith(msg, it->first))
+	int	res;
+
+	if (_commandMap.find(cmdline[0]) == _commandMap.end())
+	{
+		//write no such command errmsg; ???
+		return (-1);
+	}
+	else
+	{
+		User &user = Server::getUserMap().find(ident)->second;
+		Command *command = _commandMap.find(cmdline[0])->second;	//std::map::end의 value 참조는 undefined behavior)
+		return (command->execute(cmdline, user, changelist, NULL));	//cmdline 2번째 인자부터 끝까지 넘길 수 있는지?
+			//실제로는 error 더욱 다양... => bool 외에 errcode 써야
+	}
+}
+
+
+void	CommandInvoker::parseString(const std::string& raw, std::vector<std::string>& cmds)
+{
+	size_t	idx = 0;
+	size_t	len = 0;
+	size_t	end = raw.length();
+
+	cmds.clear();
+	while (idx < end)
+	{
+		while (raw[idx + len] != '\n' && raw[idx + len] != '\r' && raw[idx + len] != '\0')
+			len++;
+		if (len > 0)
+			cmds.push_back(raw.substr(idx, len));
+		idx += (len + 1);
+		len = 0;
+	}
+}
+
+void	CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>& cmdline)	//개행이나 /r처리해야
+{
+	size_t idx = 0;
+	size_t len = 0;
+	size_t end = msg.length();
+	// std::vector<std::string> args;	//좀 더 좋은방법 없나...?
+
+	cmdline.clear();
+	while (idx < end)
+	{
+		while (msg[idx + len] != ' ' && msg[idx + len] != ':' && msg[idx + len] != '\0')
+			len++;
+		cmdline.push_back(msg.substr(idx, len));
+		if (msg[idx + len] == ':')
 		{
-			//executeCommand(it->first, user);	//userlist, channallist 둘 다 전달해줘야;
-			_commandMap[it->first].execute(user, args)	// 가 구조적으로 맞는 것 같은데...?	//changelist도 전달해줘야...
+			cmdline.push_back(msg.substr(idx + len));
 			break ;
 		}
+		idx += (len + 1);
+		len = 0;
 	}
-	//throw noSuchCommand exception
+	//여기서 명령어 호출
 }
 
-bool	startWith(const char *msg, const char *prefix)
+void CommandInvoker::commandConnector(int ident, const std::string& message, std::vector<struct kevent> &changelist)
 {
-	return (msg.compare(prefix) == 0 && msg.size() >= prefix.size());
+	Server& server = Server::getInstance();	//이렇게 하는거랑 Class Server; 이렇게 선언하는 것의 작동 차이?
+	std::vector<std::string> commands;
+	std::vector<std::string> cmdline;
+
+	parseString(message, commands);	//개행을 삭제해서 command 단위로 나눠준다
+	std::vector<std::string>::iterator	it;	//command를 순서대로 parse -> 실행
+	for (it = commands.begin(); it < commands.end(); it++)
+	{
+		parseLine(*it, cmdline);
+		executeCommand(cmdline, ident, changelist, NULL);	//만약 앞의 커맨드에서 실패한다면?
+		// std::vector<std::string>::iterator	jt;
+		// jt = cmdline.begin();
+		// for (; jt < cmdline.end(); jt++)
+		// 	std::cout << *jt << std::endl;
+		// std::cout << std::endl;
+	}
 }
