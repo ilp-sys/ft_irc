@@ -29,28 +29,28 @@ class Server
 
         int _kq;
         int _servSock;
-		    CommandInvoker _invoker;
+        CommandInvoker _invoker;
 
         std::string _password;
         std::map<int, User> _users;
         std::map<std::string, Channel> _channels;
 
         Server(){};
-		
-		// handle socket EOF (EOF means disconnect)
-		void handleEof(struct kevent &k);
+    
+    // handle socket EOF (EOF means disconnect)
+    void handleEof(struct kevent &k);
 
-		// event ERROR, print kevent status
-		void handleError(struct kevent &k);
+    // event ERROR, print kevent status
+    void handleError(struct kevent &k);
 
-		//set the new client socket to nonblock and add it to changelist
-		void acceptUser(std::vector<struct kevent> &changelist);
+    //set the new client socket to nonblock and add it to changelist
+    void acceptUser(std::vector<struct kevent> &changelist);
 
-		// recv
-		void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
+    // recv
+    void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
 
-		// send
-		void handleWrite(struct kevent &k, std::vector<struct kevent> &changelist);
+    // send
+    void handleWrite(struct kevent &k, std::vector<struct kevent> &changelist);
 
     // test function
     void testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist);
@@ -64,7 +64,7 @@ class Server
         void cmdsSetup();
         void run();
 
-		    std::map<int, User>&	getUserMap();
+        std::map<int, User>&  getUserMap();
         
         void setPswd(std::string);
         std::string getPswd() const;
