@@ -6,7 +6,7 @@
 class Quit : public Command
 {
     public:
-        void execute(User& user);
+        void execute(Client& client);
 };
 
 

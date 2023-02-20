@@ -6,7 +6,7 @@
 
 class Channel;
 
-class User
+class Client
 {
         const int _userSock;
         std::string _nickname;
@@ -16,7 +16,7 @@ class User
 		bool	isRegistered;
         //std::vector<Channel*> _joinedChannel; //
     public:
-        User(int fd);
+        Client(int fd);
 
         const int getUserSock(void) const;
         const std::string& getNickname(void) const;

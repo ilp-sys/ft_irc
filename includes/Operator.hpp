@@ -1,9 +1,9 @@
 #ifndef __OPERATOR_HPP__
 #define __OPERATOR_HPP__
 
-#include "User.hpp"
+#include "Client.hpp"
 
-class Operator : public User
+class Operator : public Client
 {
 
 };

@@ -1,6 +1,6 @@
 #include "../includes/Part.hpp"
 
-void Part::execute(User &user)
+void Part::execute(Client &client)
 {
 
 }

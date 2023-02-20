@@ -1,6 +1,6 @@
 #include "../includes/Join.hpp"
 
-void Join::execute(User &user)
+void Join::execute(Client &client)
 {
 
 }

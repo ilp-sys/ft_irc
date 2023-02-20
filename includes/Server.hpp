@@ -14,7 +14,7 @@
 #include <map>
 #include <vector>
 
-#include "User.hpp"
+#include "Client.hpp"
 #include "Channel.hpp"
 #include "CommandInvoker.hpp"
 #include "Define.hpp"
@@ -32,7 +32,7 @@ class Server
         CommandInvoker _invoker;
 
         std::string _password;
-        std::map<int, User> _users;
+        std::map<int, Client> _clients;
         std::map<std::string, Channel> _channels;
 
         Server(){};
@@ -64,7 +64,7 @@ class Server
         void cmdsSetup();
         void run();
 
-        std::map<int, User>&  getUserMap();
+        std::map<int, Client>&  getUserMap();
         
         void setPswd(std::string);
         std::string getPswd() const;

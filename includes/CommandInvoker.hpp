@@ -6,7 +6,7 @@
 #include <map>
 
 #include "Command.hpp"
-#include "User.hpp"
+#include "Client.hpp"
 #include "Nick.hpp"
 
 class CommandInvoker

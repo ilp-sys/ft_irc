@@ -7,7 +7,7 @@ CommandInvoker::CommandInvoker()
 {
   _commandMap.insert(std::make_pair("NICK", new Nick()));
   // _commandMap.insert(std::make_pair("PASS", new Pass()));
-  // _commandMap.insert(std::make_pair("USER", new User()));
+  // _commandMap.insert(std::make_pair("USER", new Client()));
   // _commandMap.insert(std::make_pair("PONG", new Pong()));
   // _commandMap.insert(std::make_pair("JOIN", new Join()));
   // _commandMap.insert(std::make_pair("PART", new Part()));
@@ -28,9 +28,9 @@ int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident,
   }
   else
   {
-    User &user = Server::getInstance().getUserMap().find(ident)->second;
+    Client &client = Server::getInstance().getUserMap().find(ident)->second;
     Command *command = _commandMap.find(cmdline[0])->second;
-    return (command->execute(cmdline, user, changelist, NULL));
+    return (command->execute(cmdline, client, changelist, NULL));
   }
 }
 

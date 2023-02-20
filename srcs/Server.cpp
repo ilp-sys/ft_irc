@@ -72,7 +72,7 @@ void Server::run()
 }
 
 void Server::handleEof(struct kevent &k){
-	PRINT_LOG(k.ident, "SERVER : flags EOF, User disconnected", R);
+	PRINT_LOG(k.ident, "SERVER : flags EOF, Client disconnected", R);
 	close(k.ident);
 }
 
@@ -88,8 +88,8 @@ void Server::acceptUser(std::vector<struct kevent> &changelist){
 	struct kevent cliEvent;
 	EV_SET(&cliEvent, cliSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0 ,0);
 	changelist.push_back(cliEvent);
-	_users.insert(std::make_pair(cliSock, User(cliSock)));
-	PRINT_LOG(cliSock, "SERVER : Accept user", B);
+	_clients.insert(std::make_pair(cliSock, Client(cliSock)));
+	PRINT_LOG(cliSock, "SERVER : Accept client", B);
 };
 
 void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist){
@@ -98,16 +98,16 @@ void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist
 	int readByte = recv(k.ident, tmp, BUFFER_SIZE, 0);
 	if (readByte < 0){
 		// TODO : disconnect process like QUIT command
-		_users.erase(k.ident);
+		_clients.erase(k.ident);
 	}
 	if (readByte != 0){
-		_users.find(k.ident)->second.getBuffer() += tmp;
+		_clients.find(k.ident)->second.getBuffer() += tmp;
 	}
 	// WARNING! back() is C++11 function... we need to find better 
-	if (_users.find(k.ident)->second.getBuffer().back() == '\n' || \
-			_users.find(k.ident)->second.getBuffer().back() == '\r'){
-		_invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
-		_users.find(k.ident)->second.getBuffer().clear();
+	if (_clients.find(k.ident)->second.getBuffer().back() == '\n' || \
+			_clients.find(k.ident)->second.getBuffer().back() == '\r'){
+		_invoker.commandConnector(k.ident, _clients.find(k.ident)->second.getBuffer().data(), changelist);
+		_clients.find(k.ident)->second.getBuffer().clear();
 	}
 };
 
@@ -125,7 +125,7 @@ void Server::handleWrite(struct kevent &currEvent, std::vector<struct kevent> &c
 };
 
 
-std::map<int, User>&	Server::getUserMap(){ return (_users); }
+std::map<int, Client>&	Server::getUserMap(){ return (_clients); }
 
 void Server::setPswd(std::string pswd)
 {

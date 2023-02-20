@@ -1,23 +1,23 @@
-#include "../includes/User.hpp"
+#include "../includes/Client.hpp"
 
-User::User(int fd): _userSock(fd) {};
+Client::Client(int fd): _userSock(fd) {};
 
-const int	User::getUserSock(void) const
+const int	Client::getUserSock(void) const
 {
 	return (_userSock);
 }
 
-const std::string&	User::getNickname(void) const
+const std::string&	Client::getNickname(void) const
 {
 	return (_nickname);
 }
 
-std::string& User::getBuffer(void)
+std::string& Client::getBuffer(void)
 {
     return (_buffer);
 }
 
-void	User::setNickname(const std::string& name)
+void	Client::setNickname(const std::string& name)
 {
 	_nickname = name;
 }

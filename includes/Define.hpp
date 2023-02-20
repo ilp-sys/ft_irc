@@ -7,7 +7,7 @@
 // error msg
 # define R "\033[31m"
 
-// user msg
+// client msg
 # define G "\033[32m"
 
 // alert msg
@@ -39,50 +39,50 @@
 	<< N << std::endl;
 
 //unknown command
-#define ERR_UNKNOWNCOMMAND(user, cmd) \
-    (std::string(":ircserv 421 ") + std::string(user) + std::string(" ") + std::string(cmd) + " :Unknown command")
+#define ERR_UNKNOWNCOMMAND(client, cmd) \
+    (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command")
 
 //all commands
-#define ERR_NEEDMOREPARAMS(user, cmd) \
-    (std::string(":ircserv 461 ") + std::string(user) + std::string(" ") + std::string(cmd) + " :Not enough parameters")
+#define ERR_NEEDMOREPARAMS(client, cmd) \
+    (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters")
 
 //nick
-#define ERR_ERRONEOUSNICKNAME(user, nick) \
-    (std::string(":ircserv 432 ") + std::string(user) + std::string(" ") + std::string(nick) + " :Erroneous Nickname")
+#define ERR_ERRONEOUSNICKNAME(client, nick) \
+    (std::string(":ircserv 432 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Erroneous Nickname")
 
 //nick
-#define ERR_NICKNAMEINUSE(user, nick) \
-    (std::string(":ircserv 433 ") + std::string(user) + std::string(" ") + std::string(nick) + " :Nickname is already in use")
+#define ERR_NICKNAMEINUSE(client, nick) \
+    (std::string(":ircserv 433 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Nickname is already in use")
     
 //join , part, kick
-#define ERR_NOSUCHCHANNEL(user, channelName) \
-    (std::string(":ircserv 403 ") + std::string(user) + std::string(" ") + std::string(channelName) + " :No such channel")
+#define ERR_NOSUCHCHANNEL(client, channelName) \
+    (std::string(":ircserv 403 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :No such channel")
 
 //part, kick
-#define ERR_NOTONCHANNEL(user, channelName) \
-    (std::string(":ircserv 442 ") + std::string(user) + std::string(" ") + std::string(channelName) + " :You're not on that channel")
+#define ERR_NOTONCHANNEL(client, channelName) \
+    (std::string(":ircserv 442 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not on that channel")
 
 // kick
-#define ERR_CHANOPRIVSNEEDED(user, channelName) \
-    (std::string(":ircserv 482 ") + std::string(user) + std::string(" ") + std::string(channelName) + " :You're not channel operator")
+#define ERR_CHANOPRIVSNEEDED(client, channelName) \
+    (std::string(":ircserv 482 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not channel operator")
 
 //privmsg, notice
-#define ERR_NORECIPIENT(user, cmd) \
-    (std::string(":ircserv 411 ") + std::string(user) + " :No recipient given (" + std::string(cmd) + ")")
+#define ERR_NORECIPIENT(client, cmd) \
+    (std::string(":ircserv 411 ") + std::string(client) + " :No recipient given (" + std::string(cmd) + ")")
 
 //privmsg, notice
-#define ERR_NOTEXTTOSEND(user) \
-    (std::string(":ircserv 412 ") + std::string(user) + " :No text to send"))
+#define ERR_NOTEXTTOSEND(client) \
+    (std::string(":ircserv 412 ") + std::string(client) + " :No text to send"))
 
 //privmsg, notice
-#define ERR_NOSUCHNICK(user, nick) \
-    (std::string(":ircserv 401 ") + std::string(user) + std::string(" ") + std::string(nick) + " :No such nick/channel"))
+#define ERR_NOSUCHNICK(client, nick) \
+    (std::string(":ircserv 401 ") + std::string(client) + std::string(" ") + std::string(nick) + " :No such nick/channel"))
 
 //ping, pong
-#define ERR_NOORIGIN(user) \
-    (std::string(":ircserv 409 ") + std::string(user) + " :No origin specified"))
+#define ERR_NOORIGIN(client) \
+    (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified"))
 
-#define SUCCESS_REPL(nick, user, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::sting(user) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd))
+#define SUCCESS_REPL(nick, client, host, cmd) \
+    (std::string(":") + std::string(nick) + std::string("!") + std::sting(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd))
 
 #endif

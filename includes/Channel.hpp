@@ -5,12 +5,12 @@
 
 #include "Operator.hpp"
 
-class User;
+class Client;
 
 class Channel
 {
         std::string _name;
-        std::vector<User*> _users;
+        std::vector<Client*> _clients;
         Operator& _operator;
     public:
         Channel(std::string name, Operator& opeator);
