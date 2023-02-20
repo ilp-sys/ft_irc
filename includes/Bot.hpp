@@ -1,25 +1,15 @@
 #ifndef BOT_HPP
 #define BOT_HPP
 
+#include "Define.hpp"
 #include <string>
 #include <iostream>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include <vector>
-
-# define C_NRML "\033[0m"
-# define C_RED  "\033[31m"
-# define C_GREN "\033[32m" 
-# define C_YLLW "\033[33m" 
-# define C_BLUE "\033[34m" 
-
-/* (021422)
-  watching()에서 메세지들을 관측하고
-  thinking()은 파싱된 메세지를 가지고 어떤 응답을 할지만 반환하는 형식은 어떤가?
-  reply()에서 이제 send를 하는 식으로....?
-*/
 
 class Bot {
 private :

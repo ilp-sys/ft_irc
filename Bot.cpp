@@ -1,4 +1,4 @@
-#include "Bot.hpp"
+#include "includes/Bot.hpp"
 
 // UTILS
 std::vector<std::string> split_msg(std::string &line, std::string s){
@@ -17,11 +17,6 @@ std::vector<std::string> split_msg(std::string &line, std::string s){
 	// 마지막 벡터는 메세지라 ':'가 붙어있어 제거
 	if (line != "")
 		tab.push_back(line.substr(pos + s.length() + 1));
-
-	// spilt check
-	for (std::vector<std::string>::iterator it = tab.begin(); it != tab.end(); ++it){
-		std::cout << C_YLLW << *it << std::endl << C_NRML;
-	}
 	return tab;
 }
 
@@ -66,7 +61,7 @@ int Bot::server_welcome(){
 	// no password for testing
 	// std::string welcome = std::string("PASS ");
 	// welcome += std::string(_server_pass);
-	std::string welcome = std::string("NICK icbot\r\nUSER bot ircbot tutle laptop\r\n");
+	std::string welcome = std::string("NICK icbot\r\nUSER bot ircbot tutle :laptop\r\n");
 	const char *buf; 
 	buf = welcome.c_str();
 	result = send(_my_sock, buf, strlen(buf), 0);
@@ -74,24 +69,24 @@ int Bot::server_welcome(){
 		perror("can't send to server");
 		return 1;
 	}
-	std::cout << C_BLUE << "connect to server\n" << C_NRML;
+	PRINT_LOG("server_welcome", "connect to server", Y);
 	return 0;
 }
 
 // watching{ thinking { botcmd } }
 std::string Bot::watching(){
-	std::cout << "관측중..........\n";
+	PRINT_LOG("watching", ".......", Y);
+	
 	std::string watched;
 	char recv_buf[1024];
 	memset(recv_buf, 0, 1024);
-	
 	int received_bytes = recv(_my_sock, recv_buf, sizeof(recv_buf), 0); //recv blocking(?)
 	if (received_bytes < 0) {
-			// maybe server off
-			std::cerr << "Error: Failed to receive data" << std::endl;
-			exit(1);
+		// maybe server off
+		PRINT_LOG("failed to connect server", "ERROR", R);
+		exit(1);
 	}
-	std::cout << C_BLUE << "[recv] -> " << recv_buf << C_NRML << std::endl;
+	PRINT_MSG("RECEVIE", "BOT", recv_buf, G);
 	watched = std::string(recv_buf);
 	return watched;
 }
@@ -99,41 +94,32 @@ std::string Bot::watching(){
 std::string Bot::thinking(std::string watched_msg){
 	size_t pos;
 	int ret = 0;
-	std::string think = "";
-
-	std::cout << "생각중.........\n";
-
 	std::vector<std::string> v = split_msg(watched_msg, " ");
-	std::cout << "----파싱완료----\n";
-	// v = {발신인, irc명령어, 타겟, 메세지}
-	if (v.size() != 4)
-		return think;
-
-	// PRIVMSG 호출이 아니라면 무시
-	if ((pos = v[1].find("PRIVMSG")) == std::string::npos){
-		return think;
+	if (v.size() == 2){ // PING
+		return std::string("PONG :laptap makes turtle...\r\n");
 	}
-	
-	_target = v[2];
-	// DM일 때는 메세지로 보내준 채널로 접속
-	if (_target == "icbot"){
-		if (v[3].find('#') != std::string::npos){
-			// v[3]는 \r\n을 가지도록 스플릿 되어있음 나중에 split함수 수정시 주의
-			think = std::string("JOIN " + v[3]).c_str();
+	else if (v.size() == 4){ // PRIVMSG
+		_target = v[2]; // member variable set
+		if ((pos = v[1].find("PRIVMSG")) == std::string::npos)
+			return std::string("");
+		// DM일 때는 메세지로 보내준 채널로 접속
+		if (v[2] == "icbot"){
+			if (v[3].find('#') != std::string::npos){ // 귓말로 채널 보낼 때만 채널로 접속하겠다 송신
+				// TODO: SOMEONE PRIVMSG BOT :#42seoul adsfhjkl 이렇게 올 때는 채널이름 오류로 서버가 걸러줘야할듯
+				return std::string("JOIN " + v[3]);
+			}
+		}
+		else{
+			// v[3]가 특정 명령어일 때 응답하도록 구현
+			return make_sense(v[3]);
 		}
 	}
-	else{
-		std::cout << "명령어 처리하러 가기\n";
-		// v[3]가 특정 명령어일 때 응답하도록 구현
-		think = make_sense(v[3]);
-	}
-	return think;
+	else
+		return std::string("");
 }
 
 // PRIVMSG target :answer
-// 무슨 기능을 추가하지?
 std::string Bot::make_sense(std::string bot_cmd){
-	std::cout << "작성중 ......\n";
 	std::string msg = "";
 	if (bot_cmd == "!bot\r\n")
 		msg = std::string("PRIVMSG " + _target + " :Did you miss me?\r\n");
@@ -143,18 +129,29 @@ std::string Bot::make_sense(std::string bot_cmd){
 		msg = std::string("PRIVMSG " + _target + " :vim master\r\n");
 	else if (bot_cmd == "!namkim\r\n")
 		msg = std::string("PRIVMSG " + _target + " :south.k\r\n"); 
-	std::cout << C_YLLW << ":" << msg << C_NRML << std::endl;
+	else if (bot_cmd == "!hum\r\n")
+		msg = std::string("PRIVMSG " + _target + " :nyaring.......\r\n"); 
+	else if (bot_cmd == "!date\r\n"){
+		time_t now;
+		struct tm *tm_now;
+		char time_str[9]; // YYYYMMDD\0
+
+		time(&now);
+		tm_now = localtime(&now);
+
+		strftime(time_str, sizeof(time_str), "%Y%m%d", tm_now);
+		msg = std::string("PRIVMSG " + _target + " :" + time_str + "\r\n");
+	}
 	return msg;
 }
 
 
 void Bot::answering(std::string answer){
-	std::cout << "응답중......\n";
 	const char *msg;
 	if (answer == "")
 		return ;
-	std::cout << C_YLLW << ":" << answer << C_NRML << std::endl;
 	msg = answer.c_str();
+	PRINT_MSG("SEND", "BOT", msg, B);
 	int ret = send(_my_sock, msg, strlen(msg), 0);
 	if (ret == -1) {
 		std::cerr << "faild to send \n";
