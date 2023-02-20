@@ -1,4 +1,4 @@
-#include "includes/Bot.hpp"
+#include "Bot.hpp"
 
 // UTILS
 std::vector<std::string> split_msg(std::string &line, std::string s){
@@ -61,7 +61,7 @@ int Bot::server_welcome(){
 	// no password for testing
 	// std::string welcome = std::string("PASS ");
 	// welcome += std::string(_server_pass);
-	std::string welcome = std::string("NICK icbot\r\nUSER bot ircbot tutle :laptop\r\n");
+	std::string welcome = std::string("NICK abot\r\nUSER bot ircbot tutle :laptop\r\n");
 	const char *buf; 
 	buf = welcome.c_str();
 	result = send(_my_sock, buf, strlen(buf), 0);
@@ -103,7 +103,7 @@ std::string Bot::thinking(std::string watched_msg){
 		if ((pos = v[1].find("PRIVMSG")) == std::string::npos)
 			return std::string("");
 		// DM일 때는 메세지로 보내준 채널로 접속
-		if (v[2] == "icbot"){
+		if (v[2] == "abot"){
 			if (v[3].find('#') != std::string::npos){ // 귓말로 채널 보낼 때만 채널로 접속하겠다 송신
 				// TODO: SOMEONE PRIVMSG BOT :#42seoul adsfhjkl 이렇게 올 때는 채널이름 오류로 서버가 걸러줘야할듯
 				return std::string("JOIN " + v[3]);

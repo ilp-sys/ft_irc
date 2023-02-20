@@ -1,15 +1,29 @@
 #ifndef BOT_HPP
 #define BOT_HPP
 
-#include "Define.hpp"
-#include <string>
-#include <iostream>
+// socket
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <string.h>
-#include <time.h>
+
+// c++
+#include <iostream>
 #include <vector>
+#include <string>
+
+// date
+#include <time.h>
+
+// for print
+# define N "\033[0m"
+# define R "\033[31m"
+# define G "\033[32m"
+# define Y "\033[33m" 
+# define B "\033[34m" 
+# define PRINT_LOG(fd, str, color) std::cout << color <<  str << "[" << fd << "]" << N << std::endl;
+# define PRINT_MSG(fd, str, buffer, color) std::cout << color <<  str << "[" << fd << "]: " << buffer << N;
+
+
 
 class Bot {
 private :
@@ -33,7 +47,6 @@ private :
   std::string make_sense(std::string bot_cmd);
   
   void answering(std::string answer);
-
 
 	void error_handle(int ret, const char *noti);
 

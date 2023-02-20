@@ -1,4 +1,4 @@
-#include "includes/Bot.hpp"
+#include "Bot.hpp"
 
 // test server : irc.atw-inter.net
 // 94.125.182.253 6667
