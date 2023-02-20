@@ -2,6 +2,7 @@
 #define __SERVER_HPP__
 
 #include <iostream>
+#include <string>
 #include <sys/event.h>
 #include <arpa/inet.h>
 #include <sys/event.h>
@@ -28,9 +29,10 @@ class Server
 
         int _kq;
         int _servSock;
-		CommandInvoker _invoker;	//unknown type name - include를 했는데 왜 못 쓰지?
+		    CommandInvoker _invoker;
 
-        static std::map<int, User> _users;
+        std::string _password;
+        std::map<int, User> _users;
         std::map<std::string, Channel> _channels;
 
         Server(){};
@@ -48,7 +50,11 @@ class Server
 		void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
 
 		// send
-		void handleWrite(struct kevent &k);
+		void handleWrite(struct kevent &k, std::vector<struct kevent> &changelist);
+
+    // test function
+    void testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist);
+
 
     public:
 
@@ -57,7 +63,12 @@ class Server
         void servSetup(char *port);
         void cmdsSetup();
         void run();
-		static std::map<int, User>&	getUserMap();
+
+		    std::map<int, User>&	getUserMap();
+        
+        void setPswd(std::string);
+        std::string getPswd() const;
+
 };
 
 #endif

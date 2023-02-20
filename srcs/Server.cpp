@@ -57,7 +57,7 @@ void Server::run()
     {
         static struct kevent eventlist[MAX_EVENTS];
         int n = kevent(_kq, changelist.data(), changelist.size(), eventlist, MAX_EVENTS, NULL);
-        std::cout << n << " events occured!" << std::endl;
+        std::cout << "\n" << n << " events occured!" << std::endl;
         if (n == -1)
             err(EXIT_FAILURE, "failed to fetch events");
         changelist.clear();
@@ -65,6 +65,9 @@ void Server::run()
 		// handle eventlist
         for (int i = 0; i < n; ++i)
         {
+			char filter = FILTER(eventlist[i].filter);
+			PRINT_FILTER(eventlist[i].ident, filter, Y);
+			// PRINT_EVENT(eventlist[i].ident, eventlist[i].flags, eventlist[i].filter, eventlist[i].fflags, eventlist[i].data, eventlist[i].udata, Y);
 			if (eventlist[i].flags & EV_EOF)
 				this->handleEof(eventlist[i]);
 			else if (eventlist[i].flags & EV_ERROR)
@@ -72,16 +75,17 @@ void Server::run()
 			else{
 				if (eventlist[i].ident == _servSock)
 					this->acceptUser(changelist);
-				else if (eventlist[i].filter & EVFILT_READ)
+				else if (eventlist[i].filter == EVFILT_READ)
 					this->handleRead(eventlist[i], changelist);
-				else if (eventlist[i].filter & EVFILT_WRITE)
-					this->handleWrite(eventlist[i]);
+				else if (eventlist[i].filter == EVFILT_WRITE)
+					this->handleWrite(eventlist[i], changelist);
 				else{
 					PRINT_LOG(eventlist[i].ident, "SERVER: Unexpected Event Occured!", R);
 					PRINT_EVENT(eventlist[i].ident, eventlist[i].flags, eventlist[i].filter, eventlist[i].fflags, eventlist[i].data, eventlist[i].udata, R);
 				}
 			}
         }
+		std::cout << "eventlist loop end" << std::endl;
     }
 }
 
@@ -118,29 +122,53 @@ void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist
 	}
 	if (readByte != 0){
 		_users.find(k.ident)->second.getBuffer() += tmp;
-		PRINT_MSG(k.ident, "server receive tmp_msg ", tmp, Y);
+		// PRINT_MSG(k.ident, "server receive tmp_msg ", tmp, Y);
 	}
-	// TODO : let me know why '\r' || '\n'   --------- @wsehyeon
-	// NOTE : end() is past the last element... ------ @wsehyeon
-	// if (*_users.find(k.ident)->second.getBuffer().end() == '\n' || \
-	// 		*_users.find(k.ident)->second.getBuffer().end() == '\r')
-
 	// WARNING! back() is C++11 function... we need to find better 
 	if (_users.find(k.ident)->second.getBuffer().back() == '\n' || \
 			_users.find(k.ident)->second.getBuffer().back() == '\r'){
-		std::cout << "call invoker.... excute command...." << std::endl;
+
 		PRINT_MSG(k.ident, "server recive full_msg ", _users.find(k.ident)->second.getBuffer(), G);
 		_invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
-		// TODO : After excute command, need User buffer clear. 
-		_users.find(k.ident)->second.getBuffer().clear(); // 여기서 클리어하는게 눈에 잘보여서 좋지않나용?
+		testServer(k, changelist); //TODO: testServer가 뭔가영
+    
+		_users.find(k.ident)->second.getBuffer().clear();
 		std::cout << R << "Out of line" << std::endl;
 	}
 };
 
-void Server::handleWrite(struct kevent &k){
-	int writeByte = send(k.ident, k.udata, std::strlen((const char*)k.udata), 0);
+void Server::handleWrite(struct kevent &currEvent, std::vector<struct kevent> &changelist){
+	//TODO : udata length check
+	int writeByte = send(currEvent.ident, currEvent.udata, 12, 0);
+	PRINT_LOG(currEvent.ident, "Server send to", B);
+	delete((std::string *)currEvent.udata);
 	//TODO: handle write failure
+	if (writeByte == -1)
+		exit(1);
+	struct kevent wEvent;
+	EV_SET(&wEvent, currEvent.ident, EVFILT_WRITE, EV_DELETE | EV_DISABLE, 0, 0 ,0);
+	changelist.push_back(wEvent);
 };
 
+
 std::map<int, User>&	Server::getUserMap(){ return (_users); }
+
+void Server::setPswd(std::string pswd)
+{
+    _password = pswd;
+}
+
+std::string Server::getPswd() const
+{
+    return (_password);
+}
+
+void Server::testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist){
+	PRINT_MSG(currEvent.ident, "Socket", _users.find(currEvent.ident)->second.getBuffer(), G);
+	struct kevent wEvent;
+	EV_SET(&wEvent, currEvent.ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, 0);
+	std::string *mydata = new std::string("here we go\n");
+	wEvent.udata = (void *)mydata;
+	changelist.push_back(wEvent);
+}
 
