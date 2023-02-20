@@ -34,6 +34,7 @@ class Server
         std::string _password;
         std::map<int, Client> _clients;
         std::map<std::string, Channel> _channels;
+		std::vector<struct kevent> _changelist;
 
         Server(){};
     
@@ -44,16 +45,16 @@ class Server
     void handleError(struct kevent &k);
 
     //set the new client socket to nonblock and add it to changelist
-    void acceptUser(std::vector<struct kevent> &changelist);
+    void acceptUser();
 
     // recv
-    void handleRead(struct kevent &k, std::vector<struct kevent> &changelist);
+    void handleRead(struct kevent &k);
 
     // send
-    void handleWrite(struct kevent &k, std::vector<struct kevent> &changelist);
+    void handleWrite(struct kevent &k);
 
     // test function
-    void testServer(struct kevent &currEvent, std::vector<struct kevent> &changelist);
+    void testServer(struct kevent &currEvent);
 
 
     public:
@@ -64,8 +65,10 @@ class Server
         void cmdsSetup();
         void run();
 
-        std::map<int, Client>&  getUserMap();
-        
+        std::map<int, Client>&  getClients();
+        std::map<std::string, Channel>&  getChannels();
+		std::vector<struct kevent>& getChangeList();
+
         void setPswd(std::string);
         std::string getPswd() const;
 
