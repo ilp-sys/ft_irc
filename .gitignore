@@ -1,0 +1,8 @@
+*.o
+.*.swp
+tags
+*.out
+*.dSYM/
+ircserv
+obj/
+.vscode/
