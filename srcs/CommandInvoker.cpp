@@ -2,18 +2,21 @@
 #include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
 
+class Server;	//이렇게 이용 가능?
+
+
 CommandInvoker::CommandInvoker()
 {
 	//여기서 CommandMap 초기 세팅
-	// _channels/changelist 세팅(만약에 한다면)?
-	addCommand("Nick", &(Nick()));	//그러면...? 여기서 개별 command header 다 가지고 있어야...
+	Nick	nick;	//이 scope에서만 유효하지 않나요 멤버변수로 등록....?
+	addCommand("Nick", &nick);	//그러면...? 여기서 개별 command header 다 가지고 있어야...
 	//server가 changelist 가지고 있으면 안 되냐구 흑흑
 	// _channels = getInstance().getChannel();
 }
 
-void CommandInvoker::addCommand(std::string commandName, Command *command)
+void CommandInvoker::addCommand(std::string commandName, Command* command)
 {
-	_commandMap.insert(std::make_pair(commandName, command));
+	_commandMap.insert(std::make_pair<std::string, Command*>(commandName, command));
 }
 
 // void CommandInvoker::setCommand(std::string commandName, Command *command)
@@ -21,7 +24,7 @@ void CommandInvoker::addCommand(std::string commandName, Command *command)
 // 	_commandMap[commandName] = command;
 // }
 
-int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, User &user, std::vector<struct kevent>& changelist, std::map<std::string, Channel>& channels)
+int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
 	int	res;
 
@@ -32,8 +35,9 @@ int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, User &user
 	}
 	else
 	{
+		User &user = Server::getUserMap().find(ident)->second;
 		Command *command = _commandMap.find(cmdline[0])->second;	//std::map::end의 value 참조는 undefined behavior)
-		return (command->execute(cmdline, user, changelist, channels));	//cmdline 2번째 인자부터 끝까지 넘길 수 있는지?
+		return (command->execute(cmdline, user, changelist, NULL));	//cmdline 2번째 인자부터 끝까지 넘길 수 있는지?
 			//실제로는 error 더욱 다양... => bool 외에 errcode 써야
 	}
 }
@@ -92,11 +96,11 @@ void CommandInvoker::commandConnector(int ident, const std::string& message, std
 	for (it = commands.begin(); it < commands.end(); it++)
 	{
 		parseLine(*it, cmdline);
-		//executeCommand(//User, cmdlist, changelist, channel)	//만약 앞의 커맨드에서 실패한다면?
-		std::vector<std::string>::iterator	jt;
-		jt = cmdline.begin();
-		for (; jt < cmdline.end(); jt++)
-			std::cout << *jt << std::endl;
-		std::cout << std::endl;
+		executeCommand(cmdline, ident, changelist, NULL);	//만약 앞의 커맨드에서 실패한다면?
+		// std::vector<std::string>::iterator	jt;
+		// jt = cmdline.begin();
+		// for (; jt < cmdline.end(); jt++)
+		// 	std::cout << *jt << std::endl;
+		// std::cout << std::endl;
 	}
 }

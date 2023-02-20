@@ -16,7 +16,7 @@ void Server::servSetup(char *port)
         err(EXIT_FAILURE, "failed to create server socket");
 
 	//set commandInvoker
-	_invoker = CommandInvoker();
+	// _invoker = CommandInvoker();
 
     int value = true;
     setsockopt(_servSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
@@ -133,6 +133,7 @@ void Server::handleRead(struct kevent &k, std::vector<struct kevent> &changelist
 		_invoker.commandConnector(k.ident, _users.find(k.ident)->second.getBuffer().data(), changelist);
 		// TODO : After excute command, need User buffer clear. 
 		_users.find(k.ident)->second.getBuffer().clear(); // 여기서 클리어하는게 눈에 잘보여서 좋지않나용?
+		std::cout << R << "Out of line" << std::endl;
 	}
 };
 
