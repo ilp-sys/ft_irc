@@ -28,7 +28,7 @@ int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident,
   }
   else
   {
-    Client &client = Server::getInstance().getUserMap().find(ident)->second;
+    Client &client = Server::getInstance().getClients().find(ident)->second;
     Command *command = _commandMap.find(cmdline[0])->second;
     return (command->execute(cmdline, client, changelist, NULL));
   }
@@ -75,7 +75,7 @@ void  CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>
   }
 }
 
-void CommandInvoker::commandConnector(int ident, const std::string& message, std::vector<struct kevent> &changelist)
+void CommandInvoker::commandConnector(int ident, const std::string& message)
 {
   Server& server = Server::getInstance();
   std::vector<std::string> commands;
@@ -87,6 +87,6 @@ void CommandInvoker::commandConnector(int ident, const std::string& message, std
   for (it = commands.begin(); it < commands.end(); it++)
   {
     parseLine(*it, cmdline);
-    executeCommand(cmdline, ident, changelist, NULL);
+    executeCommand(cmdline, ident, server.getChangeList(), NULL);
   }
 }
