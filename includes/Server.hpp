@@ -62,4 +62,6 @@ class Server
         const Client* findUserByNick(std::string target);
 };
 
+std::string mergeVec(const std::vector<std::string> &vec);
+
 #endif
