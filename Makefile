@@ -7,7 +7,8 @@ RM				:= rm
 RMFLAGS     	:= -rf
 
 SRCDIR			:= ./srcs/
-SRCNAME 		:= main.cpp Server.cpp Client.cpp CommandInvoker.cpp Nick.cpp Command.cpp
+SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp
+
 SRCS			:= $(addprefix $(SRCDIR), $(SRCNAME))
 
 OBJDIR			:= ./obj/
@@ -29,7 +30,7 @@ clean			:
 
 .PHONY			: fclean
 fclean			: clean
-				$(RM) $(NAME)
+				$(RM) $(RMFLAGS) $(NAME)
 
 .PHONY			: re
 re				: fclean all
