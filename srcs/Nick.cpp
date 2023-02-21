@@ -25,7 +25,7 @@ bool	Nick::checkArgsFormat(std::string& newnick)
 //INFO : evenif length is more than 2, it only takes 2
 bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
-	if (cmdlist.size() < 2)
+	if (cmdlist.size() < getRequiredArgsNumber())
 	{
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
 		return (false);
@@ -70,7 +70,7 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
 		//TODO: SUCCESS_REPL 에서 segv
 		// std::string *msg = new std::string(SUCCESS_REPL("prevName", client.getUserName(), client.getHostName(), cmdlist[0]));
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), "YOUR MESSAGE");
+		makeWriteEvent(client.getUserSock(), server.getChangeList(), SUCCESS_REPL("prevName", "userName", "HostName", cmdlist[0]));
 	}
 }
 
