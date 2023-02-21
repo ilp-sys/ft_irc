@@ -63,7 +63,8 @@ void  CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>
   {
     while (msg[idx + len] != ' ' && msg[idx + len] != ':' && msg[idx + len] != '\0')
       len++;
-    cmdline.push_back(msg.substr(idx, len));
+    if (len > 0)
+      cmdline.push_back(msg.substr(idx, len));
     if (msg[idx + len] == ':')
     {
       cmdline.push_back(msg.substr(idx + len));
