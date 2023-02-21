@@ -18,10 +18,10 @@ bool  Privmsg::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 
 void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
+    Server& server = Server::getInstance();
     std::vector<Channel*> targetChannel;
     std::vector<Client*> targetUser;
 
-    Server& server = Server::getInstance();
     if (checkArgs(cmdlist, client))
     {
         //parse target field

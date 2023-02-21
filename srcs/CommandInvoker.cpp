@@ -1,6 +1,9 @@
 #include "../includes/CommandInvoker.hpp"
-#include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
+#include "../includes/Nick.hpp"
+#include "../includes/Join.hpp"
+#include "../includes/Privmsg.hpp"
+#include "../includes/Notice.hpp"
 
 //TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
@@ -9,11 +12,11 @@ CommandInvoker::CommandInvoker()
   // _commandMap.insert(std::make_pair("PASS", new Pass()));
   // _commandMap.insert(std::make_pair("USER", new Client()));
   // _commandMap.insert(std::make_pair("PONG", new Pong()));
-  // _commandMap.insert(std::make_pair("JOIN", new Join()));
+   _commandMap.insert(std::make_pair("JOIN", new Join()));
   // _commandMap.insert(std::make_pair("PART", new Part()));
   // _commandMap.insert(std::make_pair("QUIT", new Quit()));
-  // _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
-  // _commandMap.insert(std::make_pair("NOTICE", new Notice()));
+   _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
+   _commandMap.insert(std::make_pair("NOTICE", new Notice()));
 }
 
 void CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
