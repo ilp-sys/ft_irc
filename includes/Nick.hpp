@@ -7,6 +7,11 @@
 //cannot cast 'Nick' to its protected base class 'Command'
 class Nick : public Command
 {
+	private:
+		//TODO: check if all included
+		const	std::string SPECIAL;
+		bool	checkArgsFormat(std::string& newnick);
+		bool	isNickExist(std::map<int, Client>& clientList, std::string& candidate);
 	public:
 		Nick();
 		int		execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);

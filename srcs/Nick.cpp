@@ -1,34 +1,74 @@
 #include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
 
+Nick::Nick() : Command(2), SPECIAL("[]\\\\`_^{|}"){}
 
-Nick::Nick() : Command(2){}
+//TODO: 9자리 까지 체크하면 된다고는 하지만? 실제로는 ...
+bool	Nick::checkArgsFormat(std::string& newnick)
+{
+	int	limit;
 
+	if (std::isalpha(newnick.data()[0]) == 0 && SPECIAL.find(newnick.data()[0]) == std::string::npos)
+		return (false);
+	limit = newnick.length();
+	if (limit > 9)
+		limit = 9;
+	for (int i = 1; i < limit; i++)
+	{
+		if (newnick.data()[i] != '-' && (std::isdigit(newnick.data()[i]) == 0) \
+			&& (std::isalpha(newnick.data()[i]) == 0) && SPECIAL.find(newnick.data()[i]) == std::string::npos)
+			return (false);
+	}
+	return (true);
+}
 //INFO : evenif length is more than 2, it only takes 2
 bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
 	if (cmdlist.size() < 2)
 	{
-		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), "NICK"));
+		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
+		return (false);
+	}
+	if (checkArgsFormat(cmdlist[1]) == false)
+	{
+		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_ERRONEOUSNICKNAME(client.getNickname(), cmdlist[1]));
 		return (false);
 	}
 	return (true);
 }
 
+bool	Nick::isNickExist(std::map<int, Client>& clientList, std::string& candidate)
+{
+	std::map<int, Client>::iterator	it;
+	
+	for (it = clientList.begin(); it != clientList.end(); it++)
+		if ((*it).second.getNickname() == candidate)
+			return (false);
+	return (true);
+}
+
 int Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-	
 	Server 	&server = Server::getInstance();
 	
+	//이 단계에서 isPassed check
 	if (!checkArgs(cmdlist, client))
 		return (1);
+	else if (isNickExist(server.getClients(), cmdlist[1]) == false)
+	{
+		std::cout << B << "HERE" << N << std::endl;
+		makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
+		return (1);
+	}
 	else
 	{
 		std::string prevName = client.getNickname();
 		client.setNickname(cmdlist[1]);
-		//TODO: use define......
-		std::string	msg = "NICK :" + cmdlist[1];
-		makeWriteEvent(client.getUserSock(), changelist, msg);
+		//_namkim-nick!root@127.0.0.1 NICK :soyoung
+		//TODO: register 되지 않으면, makeWriteEvent 발생하지 않음
+		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
+		// std::string *msg = new std::string(SUCCESS_REPL(prevName, client.getUserName(), client.getHostName(), cmdlist[0]));
+		makeWriteEvent(client.getUserSock(), server.getChangeList(), "YOUR MESSAGE");
 		return (0);
 	}
 }

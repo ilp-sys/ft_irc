@@ -80,9 +80,9 @@
 
 //ping, pong
 #define ERR_NOORIGIN(client) \
-    (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified"))
+    (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified")
 
 #define SUCCESS_REPL(nick, client, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::sting(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd))
+    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd))
 
 #endif
