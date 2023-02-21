@@ -3,14 +3,6 @@
 
 #include <sstream>
 
-std::string mergeVec(const std::vector<std::string> &vec)
-{
-    std::string res;
-    for (std::vector<std::string>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-            res += *it;
-    return (res);
-}
-
 Privmsg::Privmsg() : Command(2) {}
 
 bool  Privmsg::checkArgs(std::vector<std::string>& cmdlist, Client& client)
