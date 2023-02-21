@@ -14,7 +14,8 @@ class Channel
     public:
         Channel(std::string name, int opfd);
 
-        std::vector<Client*> getClients();
+        std::vector<Client*>& getClients();
+        void addClient(Client*);
 };
 
 
