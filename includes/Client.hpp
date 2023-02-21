@@ -13,8 +13,8 @@ class Client
 		//<username> <hostname> <servername> <realname>
         std::vector<std::string> _userInfo;
         std::string _buffer;
-		bool	isPassed;
-		bool	isRegistered;
+		bool	_isPassed;
+		bool	_isRegistered;
         //std::vector<Channel*> _joinedChannel; //
     public:
         Client(int fd);
@@ -29,6 +29,8 @@ class Client
 
         void setNickname(const std::string& name);
 		void setUserInfo(const std::string& string);
+		void setIsRegistered();
+		void setIsPassed();
 };
 
 #endif
