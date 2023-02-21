@@ -14,7 +14,7 @@ class Nick : public Command
 		bool	isNickExist(std::map<int, Client>& clientList, std::string& candidate);
 	public:
 		Nick();
-		int		execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
+		void	execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
 		bool	isUnique(const std::string& nickname, const std::map<int, Client>& userMap) const;
 		bool	checkArgs(std::vector<std::string>& cmdlist, Client& client);
 };

@@ -14,7 +14,7 @@ class Command
 	public:
 		Command();
 		Command(int argnum);
-		virtual int		execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels) = 0;
+		virtual void	execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels) = 0;
 		virtual bool	checkArgs(std::vector<std::string>& cmdlist, Client& client) = 0;
 		void	makeWriteEvent(int ident, std::vector<struct kevent>& changelist, std::string msg);
 };

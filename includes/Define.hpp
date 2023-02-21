@@ -40,49 +40,49 @@
 
 //unknown command
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
-    (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command")
+    (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
 
 //all commands
 #define ERR_NEEDMOREPARAMS(client, cmd) \
-    (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters")
+    (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters\n")
 
 //nick
 #define ERR_ERRONEOUSNICKNAME(client, nick) \
-    (std::string(":ircserv 432 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Erroneous Nickname")
+    (std::string(":ircserv 432 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Erroneous Nickname\n")
 
 //nick
 #define ERR_NICKNAMEINUSE(client, nick) \
-    (std::string(":ircserv 433 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Nickname is already in use")
+    (std::string(":ircserv 433 ") + std::string(client) + std::string(" ") + std::string(nick) + " :Nickname is already in use\n")
     
 //join , part, kick
 #define ERR_NOSUCHCHANNEL(client, channelName) \
-    (std::string(":ircserv 403 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :No such channel")
+    (std::string(":ircserv 403 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :No such channel\n")
 
 //part, kick
 #define ERR_NOTONCHANNEL(client, channelName) \
-    (std::string(":ircserv 442 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not on that channel")
+    (std::string(":ircserv 442 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not on that channel\n")
 
 // kick
 #define ERR_CHANOPRIVSNEEDED(client, channelName) \
-    (std::string(":ircserv 482 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not channel operator")
+    (std::string(":ircserv 482 ") + std::string(client) + std::string(" ") + std::string(channelName) + " :You're not channel operator\n")
 
 //privmsg, notice
 #define ERR_NORECIPIENT(client, cmd) \
-    (std::string(":ircserv 411 ") + std::string(client) + " :No recipient given (" + std::string(cmd) + ")")
+    (std::string(":ircserv 411 ") + std::string(client) + " :No recipient given (" + std::string(cmd) + ")\n")
 
 //privmsg, notice
 #define ERR_NOTEXTTOSEND(client) \
-    (std::string(":ircserv 412 ") + std::string(client) + " :No text to send"))
+    (std::string(":ircserv 412 ") + std::string(client) + " :No text to send\n")
 
 //privmsg, notice
 #define ERR_NOSUCHNICK(client, nick) \
-    (std::string(":ircserv 401 ") + std::string(client) + std::string(" ") + std::string(nick) + " :No such nick/channel"))
+    (std::string(":ircserv 401 ") + std::string(client) + std::string(" ") + std::string(nick) + " :No such nick/channel\n")
 
 //ping, pong
 #define ERR_NOORIGIN(client) \
-    (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified")
+    (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
 #define SUCCESS_REPL(nick, client, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd))
+    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
 
 #endif
