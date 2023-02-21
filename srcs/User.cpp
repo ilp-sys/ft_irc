@@ -1,6 +1,6 @@
 #include "../includes/User.hpp"
 
-Nick::User() : Command(5){}
+User::User() : Command(5){}
 
 void	User::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {

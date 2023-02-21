@@ -3,17 +3,18 @@
 
 #include <vector>
 
-#include "Operator.hpp"
-
 class Client;
+#include "Client.hpp"
 
 class Channel
 {
         std::string _name;
         std::vector<Client*> _clients;
-        Operator& _operator;
+        int _opfd;
     public:
-        Channel(std::string name, Operator& opeator);
+        Channel(std::string name, int opfd);
+
+        std::vector<Client*> getClients();
 };
 
 

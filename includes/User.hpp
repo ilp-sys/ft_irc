@@ -6,11 +6,10 @@
 
 class User : public Command
 {
-	// private:
-	public:
-		User();
-		void	execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
-		bool	checkArgs(std::vector<std::string>& cmdlist, Client& client);
+  public:
+    User();
+    void  execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
+    bool  checkArgs(std::vector<std::string>& cmdlist, Client& client);
 };
 
 #endif
