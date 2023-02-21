@@ -3,6 +3,7 @@
 
 Nick::Nick() : Command(2), SPECIAL("[]\\\\`_^{|}"){}
 
+//TODO: Welcome Protocal 어떻게 할지 정하기 -> Nick의 경우 unregistered 상태에서 
 //TODO: 9자리 까지 체크하면 된다고는 하지만? 실제로는 ...
 bool	Nick::checkArgsFormat(std::string& newnick)
 {
@@ -47,29 +48,29 @@ bool	Nick::isNickExist(std::map<int, Client>& clientList, std::string& candidate
 	return (true);
 }
 
-int Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
+void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
 	Server 	&server = Server::getInstance();
 	
 	//이 단계에서 isPassed check
 	if (!checkArgs(cmdlist, client))
-		return (1);
+		return ;
 	else if (isNickExist(server.getClients(), cmdlist[1]) == false)
 	{
 		std::cout << B << "HERE" << N << std::endl;
 		makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
-		return (1);
 	}
 	else
 	{
 		std::string prevName = client.getNickname();
 		client.setNickname(cmdlist[1]);
+		std::cout << R << client.getNickname() << N << std::endl;
 		//_namkim-nick!root@127.0.0.1 NICK :soyoung
 		//TODO: register 되지 않으면, makeWriteEvent 발생하지 않음
 		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
-		// std::string *msg = new std::string(SUCCESS_REPL(prevName, client.getUserName(), client.getHostName(), cmdlist[0]));
+		//TODO: SUCCESS_REPL 에서 segv
+		// std::string *msg = new std::string(SUCCESS_REPL("prevName", client.getUserName(), client.getHostName(), cmdlist[0]));
 		makeWriteEvent(client.getUserSock(), server.getChangeList(), "YOUR MESSAGE");
-		return (0);
 	}
 }
 
