@@ -16,7 +16,7 @@ CommandInvoker::CommandInvoker()
   // _commandMap.insert(std::make_pair("NOTICE", new Notice()));
 }
 
-int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
+void CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
   int res;
   
@@ -24,13 +24,12 @@ int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident,
   if (_commandMap.find(cmdline[0]) == _commandMap.end())
   {
     std::cout << "no command" << std::endl;
-    return (false);
   }
   else
   {
     Client &client = Server::getInstance().getClients().find(ident)->second;
     Command *command = _commandMap.find(cmdline[0])->second;
-    return (command->execute(cmdline, client, changelist, NULL));
+    command->execute(cmdline, client, changelist, NULL);
   }
 }
 
