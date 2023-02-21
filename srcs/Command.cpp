@@ -12,3 +12,5 @@ void	Command::makeWriteEvent(int ident, std::vector<struct kevent>& changelist, 
 	EV_SET(&event, ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, static_cast<void *>(reply));
 	changelist.push_back(event);
 }
+
+const int	Command::getRequiredArgsNumber(){ return ( _requiredArgsNumber ); }
