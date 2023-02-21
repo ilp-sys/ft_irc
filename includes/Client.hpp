@@ -28,6 +28,7 @@ class Client
         std::string& getBuffer(void);
 
         void setNickname(const std::string& name);
+		void setUserInfo(const std::string& string);
 };
 
 #endif
