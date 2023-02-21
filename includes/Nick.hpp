@@ -8,7 +8,6 @@
 class Nick : public Command
 {
 	private:
-		//TODO: check if all included
 		const	std::string SPECIAL;
 		bool	checkArgsFormat(std::string& newnick);
 		bool	isNickExist(std::map<int, Client>& clientList, std::string& candidate);
