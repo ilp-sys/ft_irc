@@ -1,12 +1,13 @@
 NAME			:= ircserv
 
 CXX 			:= c++
-CXXFLAGS  		:= -std=c++98 -Wall -Wextra -Werror
+CXXFLAGS  		:= #-std=c++98 -Wall -Wextra -Werror #-v
 
 RM				:= rm
 RMFLAGS     	:= -rf
 
 SRCDIR			:= ./srcs/
+
 SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp Part.cpp
 
 SRCS			:= $(addprefix $(SRCDIR), $(SRCNAME))
@@ -21,9 +22,9 @@ INCDIR			:= includes/
 all				: $(NAME)
 
 $(NAME) 		: $(OBJS)
-				$(CXX) -I$(INCDIR) $^ -o $@
+				$(CXX) $(CXXFLAGS) -I$(INCDIR) $^ -o $@
 
-.PHONY			: clean
+.PHONY		: clean
 clean			:
 				$(RM) $(RMFLAGS) $(OBJS)
 				$(RM) $(RMFLAGS) $(OBJDIR)
@@ -37,4 +38,4 @@ re				: fclean all
 
 $(OBJDIR)%.o:$(SRCDIR)%.cpp
 	@mkdir -p $(OBJDIR)
-	$(CXX) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@

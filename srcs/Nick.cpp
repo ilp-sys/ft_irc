@@ -25,7 +25,7 @@ bool	Nick::checkArgsFormat(std::string& newnick)
 //INFO : evenif length is more than 2, it only takes 2
 bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
-	if (cmdlist.size() < getRequiredArgsNumber())
+	if (cmdlist.size() < static_cast<unsigned long>(getRequiredArgsNumber()))
 	{
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
 		return (false);
@@ -38,9 +38,9 @@ bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 	return (true);
 }
 
-bool	Nick::isNickExist(std::map<int, Client>& clientList, std::string& candidate)
+bool	Nick::isNickUnique(const std::map<int, Client>& clientList, const std::string& candidate) const
 {
-	std::map<int, Client>::iterator	it;
+	std::map<int, Client>::const_iterator	it;
 	
 	for (it = clientList.begin(); it != clientList.end(); it++)
 		if ((*it).second.getNickname() == candidate)
@@ -51,34 +51,22 @@ bool	Nick::isNickExist(std::map<int, Client>& clientList, std::string& candidate
 void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
 	Server 	&server = Server::getInstance();
-	
-	//이 단계에서 isPassed check
+	(void)channels;
+
 	if (!checkArgs(cmdlist, client))
 		return ;
-	else if (isNickExist(server.getClients(), cmdlist[1]) == false)
-	{
-		std::cout << B << "HERE" << N << std::endl;
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
-	}
+	else if (isNickUnique(server.getClients(), cmdlist[1]) == false)
+		makeWriteEvent(client.getUserSock(), changelist, ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
 	else
 	{
 		std::string prevName = client.getNickname();
 		client.setNickname(cmdlist[1]);
-		std::cout << R << client.getNickname() << N << std::endl;
 		//_namkim-nick!root@127.0.0.1 NICK :soyoung
-		//TODO: register 되지 않으면, makeWriteEvent 발생하지 않음
 		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
-		//TODO: SUCCESS_REPL 에서 segv
-		// std::string *msg = new std::string(SUCCESS_REPL("prevName", client.getUserName(), client.getHostName(), cmdlist[0]));
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), SUCCESS_REPL("prevName", "userName", "HostName", cmdlist[0]));
+		//TODO: SUCCESS_REPL 에서 segv -> check
+		//TODO: registered 안 되었을 때도 write 할 지 결정하기
+		if (client.getIsRegistered() == true)
+			makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, client.getNickname(), client.getHostName(), cmdlist[0]));
 	}
 }
 
-bool	Nick::isUnique(const std::string& nickname, const std::map<int, Client>& userMap) const
-{
-	std::map<int, Client>::const_iterator	it = userMap.begin();
-	for (; it != userMap.end(); it++)
-		if (it->second.getNickname() == nickname)
-			return (false);
-	return (true);
-}

@@ -13,4 +13,4 @@ void	Command::makeWriteEvent(int ident, std::vector<struct kevent>& changelist, 
 	changelist.push_back(event);
 }
 
-const int	Command::getRequiredArgsNumber(){ return ( _requiredArgsNumber ); }
+int	Command::getRequiredArgsNumber() const { return ( _requiredArgsNumber); }

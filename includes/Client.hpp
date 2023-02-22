@@ -20,13 +20,15 @@ class Client
     public:
         Client(int fd);
 
-        const int getUserSock(void) const;
+        int getUserSock(void) const;
         const std::string& getNickname(void) const;
         const std::string& getUserName(void) const;
         const std::string& getHostName(void) const;
         // const std::string& getServerName(void) const;
         // const std::string& getRealName(void) const;
         std::string& getBuffer(void);
+		bool getIsRegistered();
+		bool getIsPassed();
 
         void setNickname(const std::string& name);
 		void setUserInfo(const std::string& string);

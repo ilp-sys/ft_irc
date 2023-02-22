@@ -6,8 +6,6 @@
 #include <map>
 
 #include "Command.hpp"
-#include "Client.hpp"
-#include "Nick.hpp"
 
 class CommandInvoker
 {
@@ -19,7 +17,5 @@ class CommandInvoker
     void  executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
     void  commandConnector(int ident, const std::string& message);
 };
-
-// bool startWith(const char* message, const char* command);
 
 #endif
