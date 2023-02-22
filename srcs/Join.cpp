@@ -16,6 +16,8 @@ bool  Join::checkArgs(std::vector<std::string>& cmdlist, Client& client)
     return (true);
 }
 
+std::string getAllClientName(Channel *channel);
+
 void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
     Server& server = Server::getInstance();
@@ -28,6 +30,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
         std::stringstream ss(cmdlist[1]);
         
         std::string token;
+        //parse channel and process it
         while (getline(ss, token, ','))
         {
             if(token[0] != '#')
@@ -41,22 +44,34 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             {
                 Channel newChan(token, client.getUserSock());
                 existingChannel.insert(std::make_pair(token, newChan));
-                //TODO: replace magic number
-                makeWriteEvent(client.getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
-                //TODO: 353, 366 reply 할 건지
+                targetChannel.push_back(&newChan);
             }
             else
                 targetChannel.push_back(&(existingChannel.find(token)->second));
+            targetChannel.back()->addClient(&client);
+            //insertChannel -> Client의 joinedChannel에 targetChannel 벡터의 마지막 요소를 넣어주세요 @swang
         }
 
-        for (std::vector<Channel*>::iterator it = targetChannel.begin(); it != targetChannel.end(); ++it)
+        //generate write events for all the clients
+        for (std::vector<Channel*>::iterator it_chan = targetChannel.begin(); it_chan != targetChannel.end(); ++it_chan)
         {
-            std::vector<Client*> existingClient = (*it)->getClients();
-            for (std::vector<Client*>::iterator it = existingClient.begin(); it != existingClient.end(); ++it)
-                //TODO: replace magic number
-                makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
-            (*it)->addClient(&client);
+            std::vector<Client*> existingClient = (*it_chan)->getClients();
+            for (std::vector<Client*>::iterator it_cli = existingClient.begin(); it_cli != existingClient.end(); ++it_cli)
+            {
+                //TODO: replace to actual ip
+                makeWriteEvent((*it_cli)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+                if ((*it_cli)->getUserSock() == client.getUserSock())
+                {
+                    makeWriteEvent((*it_cli)->getUserSock(), server.getChangeList(), RPL_NAMEREPLY(client.getUserName(), (*it_chan)->getChannelName(), getAllClientName(*it_chan)));
+                    makeWriteEvent((*it_cli)->getUserSock(), server.getChangeList(), RPL_ENDOFNAMES(client.getUserName(), (*it_chan)->getChannelName()));
+                }
+            }
         }
     }
 }
 
+std::string getAllClientName(Channel *channel)
+{
+    std::string str;
+    return (str);
+}

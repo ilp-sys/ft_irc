@@ -16,7 +16,9 @@ class Channel
 
         std::vector<Client*>& getClients();
         void addClient(Client*);
-		bool findJoinClient(std::string);
+        bool findJoinClient(std::string);
+
+        std::string getChannelName() const;
 };
 
 

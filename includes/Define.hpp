@@ -90,6 +90,12 @@
 #define ERR_NOORIGIN(client) \
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
+#define RPL_NAMEREPLY(client, channel, clientList) \
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList))
+
+#define RPL_ENDOFNAMES(nick, channel) \
+    (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list")
+
 #define SUCCESS_REPL(nick, client, host, cmd) \
     (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
 

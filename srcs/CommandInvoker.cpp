@@ -5,6 +5,7 @@
 #include "../includes/Pass.hpp"
 #include "../includes/Join.hpp"
 #include "../includes/Part.hpp"
+#include "../includes/Pong.hpp"
 #include "../includes/Privmsg.hpp"
 #include "../includes/Notice.hpp"
 
@@ -14,7 +15,7 @@ CommandInvoker::CommandInvoker()
   _commandMap.insert(std::make_pair("NICK", new Nick()));
   _commandMap.insert(std::make_pair("USER", new User()));
   _commandMap.insert(std::make_pair("PASS", new Pass()));
-  // _commandMap.insert(std::make_pair("PONG", new Pong()));
+   _commandMap.insert(std::make_pair("PONG", new Pong()));
    _commandMap.insert(std::make_pair("JOIN", new Join()));
   _commandMap.insert(std::make_pair("PART", new Part()));
   // _commandMap.insert(std::make_pair("QUIT", new Quit()));

@@ -7,17 +7,11 @@ RM				:= rm
 RMFLAGS     	:= -rf
 
 SRCDIR			:= ./srcs/
-<<<<<<< HEAD
 
 SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Pass.cpp\
 					Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp \
-					Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp Part.cpp
+					Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp Part.cpp 
 
-=======
-
-SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp Part.cpp
-
->>>>>>> 4abb5d70130c821d52d43f04c95f3753cb32d50e
 SRCS			:= $(addprefix $(SRCDIR), $(SRCNAME))
 
 OBJDIR			:= ./obj/
