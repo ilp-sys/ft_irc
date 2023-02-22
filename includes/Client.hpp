@@ -24,6 +24,7 @@ class Client
         const std::string& getNickname(void) const;
         const std::string& getUserName(void) const;
         const std::string& getHostName(void) const;
+		std::vector<std::string>& getUserInfo(void);
         // const std::string& getServerName(void) const;
         // const std::string& getRealName(void) const;
         std::string& getBuffer(void);
