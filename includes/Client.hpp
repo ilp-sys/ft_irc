@@ -1,5 +1,5 @@
-#ifndef __USER_HPP__
-#define __USER_HPP__
+#ifndef __CLIENT_HPP__
+#define __CLIENT_HPP__
 
 #include <iostream>
 #include <vector>

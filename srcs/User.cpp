@@ -1,4 +1,5 @@
 #include "../includes/User.hpp"
+#include "../includes/Server.hpp"
 
 User::User() : Command(5){}
 

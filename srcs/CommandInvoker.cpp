@@ -1,11 +1,13 @@
 #include "../includes/CommandInvoker.hpp"
+#include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
+#include "../includes/User.hpp"
 
 //TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
 {
   _commandMap.insert(std::make_pair("NICK", new Nick()));
-//   _commandMap.insert(std::make_pair("USER", new User()));
+  _commandMap.insert(std::make_pair("USER", new User()));
   // _commandMap.insert(std::make_pair("PASS", new Pass()));
   // _commandMap.insert(std::make_pair("PONG", new Pong()));
   // _commandMap.insert(std::make_pair("JOIN", new Join()));
