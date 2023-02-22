@@ -3,7 +3,6 @@
 
 #include "Client.hpp"
 #include "Channel.hpp"
-
 #include <exception>
 #include <map>
 #include <string>
