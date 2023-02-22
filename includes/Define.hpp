@@ -42,9 +42,17 @@
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
     (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
 
+//Unauthorized command (not registered)
+#define ERR_NOTREGISTERED(client, cmd) \
+    (std::string(":ircserv 451 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :You have not registered\n")
+
 //all commands
 #define ERR_NEEDMOREPARAMS(client, cmd) \
     (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters\n")
+
+//
+#define ERR_ALREADYREGISTRED(client, cmd) \
+    (std::string(":ircserv 462 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unauthorized command (already registered)\n")
 
 //nick
 #define ERR_ERRONEOUSNICKNAME(client, nick) \
