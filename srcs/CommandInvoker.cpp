@@ -15,7 +15,7 @@ CommandInvoker::CommandInvoker()
   _commandMap.insert(std::make_pair("NICK", new Nick()));
   _commandMap.insert(std::make_pair("USER", new User()));
   _commandMap.insert(std::make_pair("PASS", new Pass()));
-   _commandMap.insert(std::make_pair("PONG", new Pong()));
+   _commandMap.insert(std::make_pair("PING", new Pong()));	//
    _commandMap.insert(std::make_pair("JOIN", new Join()));
   _commandMap.insert(std::make_pair("PART", new Part()));
   // _commandMap.insert(std::make_pair("QUIT", new Quit()));
@@ -109,6 +109,9 @@ void CommandInvoker::commandConnector(int ident, const std::string& message)
   std::vector<std::string>::iterator  it;
   for (it = commands.begin(); it < commands.end(); it++)
   {
+	if (*it == "CAP LS")
+		continue ;
+	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
     executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
   }
