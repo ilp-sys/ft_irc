@@ -8,7 +8,7 @@ RMFLAGS     	:= -rf
 
 SRCDIR			:= ./srcs/
 
-SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp
+SRCNAME 		:= Client.cpp Command.cpp CommandInvoker.cpp Join.cpp Kick.cpp Nick.cpp Notice.cpp Part.cpp Privmsg.cpp Quit.cpp Server.cpp User.cpp main.cpp Channel.cpp Join.cpp Part.cpp
 
 SRCS			:= $(addprefix $(SRCDIR), $(SRCNAME))
 
