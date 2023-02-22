@@ -3,6 +3,7 @@
 
 #include "Client.hpp"
 #include "Channel.hpp"
+
 #include <exception>
 #include <map>
 #include <string>
@@ -10,7 +11,6 @@
 
 class Command
 {
-	private:
 		int		_requiredArgsNumber;
 		Command();
 	public:
