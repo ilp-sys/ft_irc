@@ -10,7 +10,6 @@
 
 class Command
 {
-	private:
 		int		_requiredArgsNumber;
 		Command();
 	public:

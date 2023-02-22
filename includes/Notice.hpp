@@ -1,17 +1,14 @@
-#ifndef __USER_HPP__
-# define __USER_HPP__
+#ifndef __NOTICE_HPP__
+#define __NOTICE_HPP__
 
 #include "Command.hpp"
 
-#include <utility>
-
-class User : public Command
+class Notice : public Command
 {
   public:
-    User();
+    Notice();
     void  execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
     bool  checkArgs(std::vector<std::string>& cmdlist, Client& client);
 };
-
 
 #endif

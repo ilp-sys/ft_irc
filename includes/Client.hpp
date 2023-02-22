@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 
+class Channel;
+#include "Channel.hpp"
+
 class Client
 {
         const int _userSock;
