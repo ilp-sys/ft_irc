@@ -10,7 +10,7 @@ bool  Notice::checkArgs(std::vector<std::string>& cmdlist, Client& client)
     Server& server = Server::getInstance();
     if (cmdlist.size() - 1 < getRequiredArgsNumber())
     {
-        makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS(client.getUserName(), mergeVec(cmdlist)));
+        makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS("client.getUserName()", mergeVec(cmdlist)));
         return (false);
     }
     return (true);
@@ -60,7 +60,7 @@ void Notice::execute(std::vector<std::string>& cmdlist, Client& client, std::vec
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
         {
             //TODO: fix hard coded address
-            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL("client.getUserName()", "client.getHostName()", "127.0.0.1", mergeVec(cmdlist)));
         }
     }
 }

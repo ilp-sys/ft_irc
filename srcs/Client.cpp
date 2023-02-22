@@ -27,6 +27,10 @@ std::string& Client::getBuffer(void)
     return (_buffer);
 }
 
+std::vector<Channel *> & Client::getJoinedChannel(void){
+	return (_joinedChannel);
+}
+
 void	Client::setNickname(const std::string& name)
 {
 	_nickname = name;

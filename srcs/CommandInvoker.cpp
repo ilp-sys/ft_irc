@@ -6,6 +6,7 @@
 #include "../includes/Part.hpp"
 #include "../includes/Privmsg.hpp"
 #include "../includes/Notice.hpp"
+#include "../includes/Quit.hpp"
 
 //TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
@@ -16,7 +17,7 @@ CommandInvoker::CommandInvoker()
   // _commandMap.insert(std::make_pair("PONG", new Pong()));
    _commandMap.insert(std::make_pair("JOIN", new Join()));
   _commandMap.insert(std::make_pair("PART", new Part()));
-  // _commandMap.insert(std::make_pair("QUIT", new Quit()));
+  _commandMap.insert(std::make_pair("QUIT", new Quit()));
    _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
    _commandMap.insert(std::make_pair("NOTICE", new Notice()));
 }
@@ -32,16 +33,16 @@ void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident
 		return ;
 	}
 	//pass하지 않은 상태라면, PASS 밖에 실행 못함!
-	if (client.getIsPassed() == false)
-	{
-		if (cmdline[0] != "PASS")
-			return ;
-	}
-	else if (client.getIsRegistered() == false)
-	{
-		if (cmdline[0] != "NICK" && cmdline[0] != "USER")
-			return ;
-	}
+	// if (client.getIsPassed() == false)
+	// {
+	// 	if (cmdline[0] != "PASS")
+	// 		return ;
+	// }
+	// else if (client.getIsRegistered() == false)
+	// {
+	// 	if (cmdline[0] != "NICK" && cmdline[0] != "USER")
+	// 		return ;
+	// }
 	else
 	{
 		Command *command = _commandMap.find(cmdline[0])->second;

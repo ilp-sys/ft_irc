@@ -66,7 +66,7 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 		//TODO: SUCCESS_REPL 에서 segv -> check
 		//TODO: registered 안 되었을 때도 write 할 지 결정하기
 		if (client.getIsRegistered() == true)
-			makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, client.getNickname(), client.getHostName(), cmdlist[0]));
+			makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, client.getNickname(), "client.getHostName()", cmdlist[0]));
 	}
 }
 
