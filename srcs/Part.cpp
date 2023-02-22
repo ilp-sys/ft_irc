@@ -27,14 +27,15 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 			targetChannel = &(found->second);
 			if (targetChannel->findJoinClient(client.getNickname()) == false){
 				makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOTONCHANNEL(client.getNickname(), token));
+				continue;
 			}
-			for (std::vector<Client *>::iterator it = targetChannel->getClients().begin(); it != targetChannel->getClients().begin(); ++it){
-				makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+			for (std::vector<Client *>::iterator it = targetChannel->getClients().begin(); it != targetChannel->getClients().end(); ++it){
+				makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL("(*it)->getUserName()", "(*it)->getHostName()", "127.0.0.1", mergeVec(cmdlist)));
 			}
 		} 
 	}
 	return;
 }
 bool  Part::checkArgs(std::vector<std::string>& cmdlist, Client& client){
-
+	return true;
 }
