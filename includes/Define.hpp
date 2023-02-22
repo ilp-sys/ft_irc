@@ -94,7 +94,7 @@
     (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList))
 
 #define RPL_ENDOFNAMES(nick, channel) \
-    (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list")
+    (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n"))
 
 #define SUCCESS_REPL(nick, client, host, cmd) \
     (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
