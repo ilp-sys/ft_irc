@@ -10,7 +10,7 @@ bool  Join::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
     if (cmdlist.size() -1 < getRequiredArgsNumber())
     {
-        makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getUserName(), mergeVec(cmdlist)));
+        makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS("client.getUserName()", mergeVec(cmdlist)));
         return (false);
     }
     return (true);
@@ -32,7 +32,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
         {
             if(token[0] != '#')
             {
-                makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOSUCHCHANNEL(client.getUserName(), token));
+                makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOSUCHCHANNEL("client.getUserName()", token));
                 continue;
             }
             token.erase(0, 1);
@@ -42,7 +42,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
                 Channel newChan(token, client.getUserSock());
                 existingChannel.insert(std::make_pair(token, newChan));
                 //TODO: replace magic number
-                makeWriteEvent(client.getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+                makeWriteEvent(client.getUserSock(), server.getChangeList(), SUCCESS_REPL("client.getUserName()", "client.getHostName()", "127.0.0.1", mergeVec(cmdlist)));
                 //TODO: 353, 366 reply 할 건지
             }
             else
@@ -54,7 +54,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             std::vector<Client*> existingClient = (*it)->getClients();
             for (std::vector<Client*>::iterator it = existingClient.begin(); it != existingClient.end(); ++it)
                 //TODO: replace magic number
-                makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+                makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL("(*it)->getUserName()", "(*it)->getHostName()", "127.0.0.1", mergeVec(cmdlist)));
             (*it)->addClient(&client);
         }
     }
