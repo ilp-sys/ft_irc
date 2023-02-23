@@ -12,4 +12,6 @@ class Pass : public Command
 		bool	checkArgs(std::vector<std::string>& cmdlist, Client& client);
 };
 
+// static void print_all_about_channel(Channel &c);
+
 #endif

@@ -14,18 +14,20 @@ void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 				if ((*jIt)->getClients().size() == 1)
 					{
 						//TODO channel delete
-						server.getChannels().erase((*jIt)->getChannelName());
+						channels->erase((*jIt)->getChannelName());
 					}
 					else{
 						targetChannel->getClients().erase(tIt);
 						tIt--;
 					}
 			}
-			makeWriteEvent((*tIt)->getUserSock(), server.getChangeList(), SUCCESS_REPL("(*tIt)->getUserName()", "(*tIt)->getHostName()", "127.0.0.1", mergeVec(cmdlist)));
+			makeWriteEvent((*tIt)->getUserSock(), changelist, SUCCESS_REPL("(*tIt)->getUserName()", "(*tIt)->getHostName()", "127.0.0.1", mergeVec(cmdlist)));
 		}
 	}
 }
 
 bool  Quit::checkArgs(std::vector<std::string>& cmdlist, Client& client){
+	(void)cmdlist;
+	(void)client;
 	return true;
 };
