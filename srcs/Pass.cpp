@@ -6,6 +6,7 @@ Pass::Pass() : Command(2){}
 
 void	Pass::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
+	(void) channels;
 	if (checkArgs(cmdlist, client) == false)
 		return ;
 	if (client.getIsPassed() == true)
