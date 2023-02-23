@@ -151,3 +151,16 @@ std::string mergeVec(const std::vector<std::string> &vec)
 	return (res);
 }
 
+std::string mergeMsg (const std::vector<std::string> &vec)
+{
+    std::string str;
+
+    for (std::vector<std::string>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+    {
+        if (it == --vec.end() && (*it)[0] != ':')
+                str += ":";
+        str += *it;
+        str += " ";
+    }
+    return (str);
+}
