@@ -38,6 +38,11 @@
 	<< "Socket[" << ident << "] filter : " << filter \
 	<< N << std::endl;
 
+//welcome
+//:irc.local 001 @NIck :Welcome to the Localnet IRC Network @NICK!@USER@@HOST
+#define RPL_WELCOME(clientNick, clientUser, clientHost) \
+    (std::string(":ircserv 001 ") + std::string(clientNick) + std::string(" :Welcome to the Localnet IRC PRIME Network ") + std::string(clientNick) + "!" + std::string(clientUser) + "@" + std::string(clientHost) + "\n")
+
 //unknown command
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
     (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
@@ -91,12 +96,15 @@
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
 #define RPL_NAMEREPLY(client, channel, clientList) \
-    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList))
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList) + "\n")
 
 #define RPL_ENDOFNAMES(client, channel) \
     (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
 
 #define SUCCESS_REPL(nick, client, host, cmd) \
     (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
+
+#define SUCCESS_REPL_NICK(prevnick, currnick, user, host, cmd) \
+    (std::string(":") + std::string(prevnick) + std::string("!") + std::string(user) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + " :" + std::string(currnick) + ("\n"))
 
 #endif
