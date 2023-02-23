@@ -22,7 +22,8 @@ void	User::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 		if (client.getNickname() != "*")
 			client.setIsRegistered();
 		//TODO: Welcome Message?
-		makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0]));
+		makeWriteEvent(client.getUserSock(), changelist, RPL_WELCOME(client.getNickname(), client.getUserName(), client.getHostName()));
+		//makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0]));
 	}
 }
 bool	User::checkArgs(std::vector<std::string>& cmdlist, Client& client)

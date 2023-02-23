@@ -63,13 +63,17 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 		client.setNickname(cmdlist[1]);
 		if (client.getIsRegistered() == false)
 			if (client.getUserInfo().size() == 4)
+			{
 				client.setIsRegistered();
+				makeWriteEvent(client.getUserSock(), changelist, RPL_WELCOME(client.getNickname(), client.getUserName(), client.getHostName()));
+				return ;
+			}
 		//_namkim-nick!root@127.0.0.1 NICK :soyoung
 		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
 		//TODO: SUCCESS_REPL 에서 segv -> check
 		//TODO: registered 안 되었을 때도 write 할 지 결정하기
 		if (client.getIsRegistered() == true)
-			makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, client.getNickname(), client.getHostName(), cmdlist[0]));
+			makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL_NICK(prevName, client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0]));
 	}
 }
 
