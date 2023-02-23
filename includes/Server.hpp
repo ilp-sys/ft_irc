@@ -63,5 +63,6 @@ class Server
 };
 
 std::string mergeVec(const std::vector<std::string> &vec);
+std::string mergeMsg (const std::vector<std::string> &vec);
 
 #endif
