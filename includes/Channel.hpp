@@ -19,7 +19,7 @@ class Channel
         bool findJoinClient(std::string);
 
         std::string getChannelName() const;
-        
+        int getOpFd() const;
 };
 
 

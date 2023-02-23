@@ -10,7 +10,7 @@ class Nick : public Command
 	private:
 		const	std::string SPECIAL;
 		bool	checkArgsFormat(std::string& newnick);
-		bool	isNickUnique(const std::map<int, Client>& clientList, const std::string& candidate) const;
+		bool	isNickUnique(std::map<int, Client>& clientList, const std::string& candidate);
 	public:
 		Nick();
 		void	execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
