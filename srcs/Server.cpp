@@ -21,7 +21,7 @@ void Server::servSetup(char *port)
 
     struct sockaddr_in _servAddress;
     _servAddress.sin_family = AF_INET;
-    _servAddress.sin_port = htons(atoi(port));
+    _servAddress.sin_port = htons(std::atoi(port));
     _servAddress.sin_addr.s_addr = INADDR_ANY;
 
     if (bind(_servSock, (struct sockaddr *)&_servAddress, sizeof(_servAddress)) == -1)
@@ -34,7 +34,7 @@ void Server::servSetup(char *port)
 void Server::run()
 {
     struct kevent change;
-  EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE , 0, 0, 0);
+  EV_SET(&change, _servSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
   _changelist.push_back(change);
 
     while (true)
@@ -47,24 +47,24 @@ void Server::run()
 
         for (int i = 0; i < n; ++i)
         {
-      char filter = FILTER(eventlist[i].filter);
-      PRINT_FILTER(eventlist[i].ident, filter, Y);
-      if (eventlist[i].flags & EV_EOF)
-        this->handleEof(eventlist[i]);
-      else if (eventlist[i].flags & EV_ERROR)
-        this->handleError(eventlist[i]);
-      else{
-        if (eventlist[i].ident == _servSock)
-          this->acceptUser();
-        else if (eventlist[i].filter == EVFILT_READ)
-          this->handleRead(eventlist[i]);
-        else if (eventlist[i].filter == EVFILT_WRITE)
-          this->handleWrite(eventlist[i]);
-        else{
-          PRINT_LOG(eventlist[i].ident, "SERVER: Unexpected Event Occured!", R);
-          PRINT_EVENT(eventlist[i].ident, eventlist[i].flags, eventlist[i].filter, eventlist[i].fflags, eventlist[i].data, eventlist[i].udata, R);
-        }
-      }
+          char filter = FILTER(eventlist[i].filter);
+          PRINT_FILTER(eventlist[i].ident, filter, Y);
+          if (eventlist[i].flags & EV_EOF)
+            this->handleEof(eventlist[i]);
+          else if (eventlist[i].flags & EV_ERROR)
+            this->handleError(eventlist[i]);
+          else{
+            if (eventlist[i].ident == _servSock)
+              this->acceptUser();
+            else if (eventlist[i].filter == EVFILT_READ)
+              this->handleRead(eventlist[i]);
+            else if (eventlist[i].filter == EVFILT_WRITE)
+              this->handleWrite(eventlist[i]);
+            else{
+              PRINT_LOG(eventlist[i].ident, "SERVER: Unexpected Event Occured!", R);
+              PRINT_EVENT(eventlist[i].ident, eventlist[i].flags, eventlist[i].filter, eventlist[i].fflags, eventlist[i].data, eventlist[i].udata, R);
+            }
+          }
         }
     }
 }
@@ -118,7 +118,7 @@ void Server::handleWrite(struct kevent &currEvent){
   if (writeByte == -1)
     exit(1);
   struct kevent wEvent;
-  EV_SET(&wEvent, currEvent.ident, EVFILT_WRITE, EV_DELETE | EV_DISABLE, 0, 0 ,0);
+  EV_SET(&wEvent, currEvent.ident, EVFILT_WRITE, EV_DELETE | EV_DISABLE | EV_UDATA_SPECIFIC, 0, 0 , currEvent.udata);
   _changelist.push_back(wEvent);
 };
 
@@ -143,13 +143,11 @@ const Client* Server::findUserByNick(std::string target)
 std::string mergeVec(const std::vector<std::string> &vec)
 {
     std::string res;
-	int	it;
-    for (it = 0; it < vec.size(); ++it)
-	{
-        res += vec[it];
+    for (std::vector<std::string>::const_iterator it = vec.begin(); it != vec.end(); ++it)
+    {
+        res += *it;
         res += " ";
-	}
-	res += vec[it];
+    }
 	return (res);
 }
 

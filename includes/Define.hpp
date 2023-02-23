@@ -96,7 +96,7 @@
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
 #define RPL_NAMEREPLY(client, channel, clientList) \
-    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList))
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList) + "\n")
 
 #define RPL_ENDOFNAMES(client, channel) \
     (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
