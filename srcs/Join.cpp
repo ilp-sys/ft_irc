@@ -73,5 +73,13 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 std::string getAllClientName(Channel *channel)
 {
     std::string str;
+    std::vector<Client*> clients = channel->getClients();
+
+    for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
+    {
+        str += "@";
+        str += (*it)->getNickname();
+        str += " ";
+    }
     return (str);
 }
