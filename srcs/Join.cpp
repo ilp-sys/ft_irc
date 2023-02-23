@@ -77,7 +77,8 @@ std::string getAllClientName(Channel *channel)
 
     for (std::vector<Client*>::iterator it = clients.begin(); it != clients.end(); ++it)
     {
-        str += "@";
+        if (channel->getOpFd() == (*it)->getUserSock())
+            str += "@";
         str += (*it)->getNickname();
         str += " ";
     }
