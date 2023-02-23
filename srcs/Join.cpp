@@ -10,7 +10,7 @@ bool  Join::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
     if (static_cast<int>(cmdlist.size() -1) < getRequiredArgsNumber())
     {
-        makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getUserName(), mergeVec(cmdlist)));
+        makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS("client.getUserName()", mergeVec(cmdlist)));
         return (false);
     }
     return (true);
@@ -51,7 +51,6 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             targetChannel.back()->addClient(&client);
             //client.getJoinedChannel().push_back(targetChannel.back());
         }
-
         //generate write events for all the clients
         for (std::vector<Channel*>::iterator it_chan = targetChannel.begin(); it_chan != targetChannel.end(); ++it_chan)
         {

@@ -16,7 +16,7 @@ class Client
         std::string _buffer;
 		bool	_isPassed;
 		bool	_isRegistered;
-        //std::vector<Channel*> _joinedChannel; //
+        std::vector<Channel*> _joinedChannel; //
     public:
         Client(int fd);
 
@@ -28,6 +28,7 @@ class Client
         // const std::string& getServerName(void) const;
         // const std::string& getRealName(void) const;
         std::string& getBuffer(void);
+		std::vector<Channel*>& getJoinedChannel(void);
 		bool getIsRegistered();
 		bool getIsPassed();
 

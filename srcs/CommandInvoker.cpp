@@ -8,6 +8,7 @@
 #include "../includes/Pong.hpp"
 #include "../includes/Privmsg.hpp"
 #include "../includes/Notice.hpp"
+#include "../includes/Quit.hpp"
 
 //TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
@@ -18,7 +19,7 @@ CommandInvoker::CommandInvoker()
    _commandMap.insert(std::make_pair("PING", new Pong()));	//
    _commandMap.insert(std::make_pair("JOIN", new Join()));
   _commandMap.insert(std::make_pair("PART", new Part()));
-  // _commandMap.insert(std::make_pair("QUIT", new Quit()));
+  _commandMap.insert(std::make_pair("QUIT", new Quit()));
    _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
    _commandMap.insert(std::make_pair("NOTICE", new Notice()));
 }
