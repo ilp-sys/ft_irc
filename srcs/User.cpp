@@ -10,6 +10,11 @@ void	User::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	
 	if (!checkArgs(cmdlist, client))
 		return ;
+	else if (client.getUserInfo().size() == 4)
+	{
+		makeWriteEvent(client.getUserSock(), changelist, ERR_ALREADYREGISTRED(client.getNickname(), cmdlist[0]));
+		return ;
+	}
 	else
 	{
 		for (int i = 1; i < 5; i++)
@@ -17,7 +22,7 @@ void	User::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 		if (client.getNickname() != "*")
 			client.setIsRegistered();
 		//TODO: Welcome Message?
-		//Write Event!
+		makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0]));
 	}
 }
 bool	User::checkArgs(std::vector<std::string>& cmdlist, Client& client)

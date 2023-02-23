@@ -2,8 +2,10 @@
 #include "../includes/Server.hpp"
 #include "../includes/User.hpp"
 #include "../includes/Nick.hpp"
+#include "../includes/Pass.hpp"
 #include "../includes/Join.hpp"
 #include "../includes/Part.hpp"
+#include "../includes/Pong.hpp"
 #include "../includes/Privmsg.hpp"
 #include "../includes/Notice.hpp"
 #include "../includes/Quit.hpp"
@@ -13,8 +15,8 @@ CommandInvoker::CommandInvoker()
 {
   _commandMap.insert(std::make_pair("NICK", new Nick()));
   _commandMap.insert(std::make_pair("USER", new User()));
-  // _commandMap.insert(std::make_pair("PASS", new Pass()));
-  // _commandMap.insert(std::make_pair("PONG", new Pong()));
+  _commandMap.insert(std::make_pair("PASS", new Pass()));
+   _commandMap.insert(std::make_pair("PING", new Pong()));	//
    _commandMap.insert(std::make_pair("JOIN", new Join()));
   _commandMap.insert(std::make_pair("PART", new Part()));
   _commandMap.insert(std::make_pair("QUIT", new Quit()));
@@ -29,25 +31,30 @@ void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident
 	Client &client = server.getClients().find(ident)->second;
 	if (_commandMap.find(cmdline[0]) == _commandMap.end())
 	{
-		_commandMap[0]->makeWriteEvent(ident, server.getChangeList(), ERR_UNKNOWNCOMMAND(client.getNickname(), cmdline[0]));
+		_commandMap["nick"]->makeWriteEvent(ident, changelist, ERR_UNKNOWNCOMMAND(client.getNickname(), cmdline[0]));
 		return ;
 	}
 	//pass하지 않은 상태라면, PASS 밖에 실행 못함!
-	// if (client.getIsPassed() == false)
-	// {
-	// 	if (cmdline[0] != "PASS")
-	// 		return ;
-	// }
-	// else if (client.getIsRegistered() == false)
-	// {
-	// 	if (cmdline[0] != "NICK" && cmdline[0] != "USER")
-	// 		return ;
-	// }
-	else
+	if (client.getIsPassed() == false)
 	{
-		Command *command = _commandMap.find(cmdline[0])->second;
-		command->execute(cmdline, client, changelist, channels);	//
+		//TODO: writing event
+		if (cmdline[0] != "PASS")
+		{
+			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
+			return ;
+		}
 	}
+	else if (client.getIsRegistered() == false)
+	{
+		//TODO: writing event
+		if (cmdline[0] != "NICK" && cmdline[0] != "USER")
+		{
+			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
+			return ;
+		}
+	}
+	Command *command = _commandMap.find(cmdline[0])->second;
+	command->execute(cmdline, client, changelist, channels);	//
 }
 
 
@@ -103,6 +110,9 @@ void CommandInvoker::commandConnector(int ident, const std::string& message)
   std::vector<std::string>::iterator  it;
   for (it = commands.begin(); it < commands.end(); it++)
   {
+	if (*it == "CAP LS")
+		continue ;
+	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
     executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
   }

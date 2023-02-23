@@ -42,9 +42,17 @@
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
     (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
 
+//Unauthorized command (not registered)
+#define ERR_NOTREGISTERED(client, cmd) \
+    (std::string(":ircserv 451 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :You have not registered\n")
+
 //all commands
 #define ERR_NEEDMOREPARAMS(client, cmd) \
     (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters\n")
+
+//
+#define ERR_ALREADYREGISTRED(client, cmd) \
+    (std::string(":ircserv 462 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unauthorized command (already registered)\n")
 
 //nick
 #define ERR_ERRONEOUSNICKNAME(client, nick) \
@@ -81,6 +89,12 @@
 //ping, pong
 #define ERR_NOORIGIN(client) \
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
+
+#define RPL_NAMEREPLY(client, channel, clientList) \
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList))
+
+#define RPL_ENDOFNAMES(client, channel) \
+    (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
 
 #define SUCCESS_REPL(nick, client, host, cmd) \
     (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")

@@ -61,6 +61,9 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	{
 		std::string prevName = client.getNickname();
 		client.setNickname(cmdlist[1]);
+		if (client.getIsRegistered() == false)
+			if (client.getUserInfo().size() == 4)
+				client.setIsRegistered();
 		//_namkim-nick!root@127.0.0.1 NICK :soyoung
 		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
 		//TODO: SUCCESS_REPL 에서 segv -> check

@@ -111,6 +111,7 @@ void Server::handleRead(struct kevent &k){
 
 void Server::handleWrite(struct kevent &currEvent){
   std::string *send_msg = static_cast<std::string *>(currEvent.udata);
+  std::cout << G << send_msg->data() << N << std::endl;
   int writeByte = send(currEvent.ident, send_msg->data(), send_msg->length(), 0);
   delete send_msg;
   //TODO: handle write failure
@@ -133,7 +134,7 @@ const Client* Server::findUserByNick(std::string target)
 {
     for (std::map<int, Client>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
     {
-        if (it->second.getUserName() == target)
+        if (it->second.getNickname() == target)
                 return (&(it->second));
     }
     return (NULL);
@@ -142,8 +143,13 @@ const Client* Server::findUserByNick(std::string target)
 std::string mergeVec(const std::vector<std::string> &vec)
 {
     std::string res;
-    for (std::vector<std::string>::const_iterator it = vec.begin(); it != vec.end(); ++it)
-            res += *it;
-    return (res);
+	int	it;
+    for (it = 0; it < vec.size(); ++it)
+	{
+        res += vec[it];
+        res += " ";
+	}
+	res += vec[it];
+	return (res);
 }
 

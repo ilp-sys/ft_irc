@@ -22,6 +22,11 @@ const std::string&	Client::getHostName(void) const
 	return (_userInfo[1]);
 }
 
+std::vector<std::string>& Client::getUserInfo(void)
+{
+	return (_userInfo);
+}
+
 std::string& Client::getBuffer(void)
 {
     return (_buffer);

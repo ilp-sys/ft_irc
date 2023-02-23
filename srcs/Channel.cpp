@@ -10,9 +10,11 @@ void Channel::addClient(Client *newClient)
 }
 
 bool Channel::findJoinClient(std::string target){
-	for (std::vector<Client *>::iterator found = _clients.begin(); found != _clients.end(); ++found){
-		if ((*found)->getNickname() == target)
-			return true;
-	}
-	return false;
+  for (std::vector<Client *>::iterator found = _clients.begin(); found != _clients.end(); ++found){
+    if ((*found)->getNickname() == target)
+      return true;
+  }
+  return false;
 }
+
+std::string Channel::getChannelName() const { return (_name); }

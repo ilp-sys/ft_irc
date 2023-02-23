@@ -28,7 +28,7 @@ void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::ve
         std::stringstream ss(cmdlist[1]);
 
         std::string token;
-        while (getline(ss, token, ','))
+        while (getline(ss, token, ','))	//왜 "," 까지 읽을까? receiver가 여러명일 때?
         {
             if (token[0] == '#')
             {
@@ -42,9 +42,9 @@ void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::ve
             else
             {
                 Client *found = const_cast<Client *>(server.findUserByNick(token));
-                if (found == NULL)
+                if (found == NULL || found->getIsRegistered() == false)
                     makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOSUCHNICK(client.getNickname(), token));
-                else
+				else
                     targetUser.push_back(found);
             }
         }
@@ -64,7 +64,7 @@ void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::ve
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
         {
             //TODO: fix hard coded address
-            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL("client.getUserName()", "client.getHostName()", "127.0.0.1", mergeVec(cmdlist)));
+            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
         }
     }
 }
