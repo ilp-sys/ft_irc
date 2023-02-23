@@ -109,10 +109,24 @@ void CommandInvoker::commandConnector(int ident, const std::string& message)
   std::vector<std::string>::iterator  it;
   for (it = commands.begin(); it < commands.end(); it++)
   {
-	if (*it == "CAP LS")
+	if (*it == "CAP LS" || isStartWith(*it, "MODE"))
 		continue ;
 	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
     executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
   }
+}
+
+bool  CommandInvoker::isStartWith(const std::string& target, const std::string& ref) const
+{
+	int	i;
+	int	len;
+
+	len = ref.size();
+	for (i = 0; i < len; i++)
+	{
+		if (target[i] != ref[i])
+			return (false);
+	}
+	return (true);
 }

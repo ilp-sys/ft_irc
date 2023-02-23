@@ -30,6 +30,8 @@ bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
 		return (false);
 	}
+	if (client.getNickname() == cmdlist[1])
+		return (false);
 	if (checkArgsFormat(cmdlist[1]) == false)
 	{
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_ERRONEOUSNICKNAME(client.getNickname(), cmdlist[1]));
@@ -38,13 +40,21 @@ bool	Nick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 	return (true);
 }
 
-bool	Nick::isNickUnique(const std::map<int, Client>& clientList, const std::string& candidate) const
+bool	Nick::isNickUnique(std::map<int, Client>& clientList, const std::string& candidate)
 {
 	std::map<int, Client>::const_iterator	it;
 	
 	for (it = clientList.begin(); it != clientList.end(); it++)
 		if ((*it).second.getNickname() == candidate)
-			return (false);
+		{
+			if (const_cast<Client&>((*it).second).getIsRegistered())
+				return (false);
+			else
+			{
+				const_cast<Client&>((*it).second).setNickname("*");
+				return (true);
+			}
+		}
 	return (true);
 }
 

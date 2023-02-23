@@ -16,6 +16,7 @@ class CommandInvoker
     CommandInvoker();
     void  executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
     void  commandConnector(int ident, const std::string& message);
+	bool  isStartWith(const std::string& target, const std::string& ref) const;
 };
 
 #endif
