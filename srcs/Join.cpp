@@ -42,13 +42,13 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 
             if (channels->find(token) == channels->end())
             {
-                Channel *newChan = new Channel(token, client.getUserSock());
-                channels->insert(std::make_pair(token, *newChan));
-                targetChannel.push_back(newChan);
+                channels->insert(std::make_pair(token, Channel(token, client.getUserSock())));
+                targetChannel.push_back(&(channels->find(token)->second));
             }
             else
                 targetChannel.push_back(&(channels->find(token)->second));
             targetChannel.back()->addClient(&client);
+            client.getJoinedChannel().push_back(targetChannel.back());
             //client.getJoinedChannel().push_back(targetChannel.back());
         }
         //generate write events for all the clients
