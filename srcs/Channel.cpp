@@ -20,3 +20,5 @@ bool Channel::findJoinClient(std::string target){
 std::string Channel::getChannelName() const { return (_name); }
 
 int Channel::getOpFd() const { return (_opfd); }
+
+void Channel::setOpFd(int fd) { _opfd = fd; }

@@ -3,22 +3,6 @@
 #include "../includes/Server.hpp"
 #include <sstream>
 
-static void print_joinedClient(Channel &c){
-	std::cout << &c << "[" <<  c.getChannelName() << "] ..... " << std::endl;
-	for (std::vector<Client *>::iterator it = c.getClients().begin(); it != c.getClients().end(); ++it){
-		std::cout << "...." << (*it)->getNickname() << std::endl;
-	}
-}
-
-static void print_all_about_channel(Channel &c){
-	std::cout << "part call all about\n		channel address : " << &c << std::endl;
-    std::vector<Client *> clients = c.getClients();
-    std::cout << "		print all about " <<  c.getChannelName() << std::endl;
-    for (int i = 0; i != clients.size(); ++i){
-        std::cout << "		" << clients[i]->getNickname() << std::endl;
-    }
-}
-
 Part::Part() : Command(0){};
 
 void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
@@ -51,6 +35,8 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 			for (std::vector<Client *>::iterator it = targetChannel.getClients().begin(); it != targetChannel.getClients().end(); ++it){
 				if ((*it)->getNickname() == client.getNickname()){
 					targetChannel.getClients().erase(it);
+					if (targetChannel.getClients().size() > 0)
+						targetChannel.setOpFd(targetChannel.getClients().front()->getUserSock());
 					break;
 				}
 			}

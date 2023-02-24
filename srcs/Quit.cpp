@@ -3,7 +3,6 @@
 
 Quit::Quit() : Command(1){};
 
-
 void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels){
 	Server &server = Server::getInstance();
 
@@ -12,6 +11,8 @@ void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 		for (std::vector<Client *>::iterator in = (*joinedChannelIt)->getClients().begin(); in != (*joinedChannelIt)->getClients().end(); ++in){
 			if ((*in)->getNickname() == client.getNickname()){
 				(*joinedChannelIt)->getClients().erase(in);
+				if ((*joinedChannelIt)->getClients().size() > 0)
+					(*joinedChannelIt)->setOpFd((*joinedChannelIt)->getClients().front()->getUserSock());
 				break;
 			}
 		} 
