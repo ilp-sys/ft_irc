@@ -40,24 +40,34 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 				makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOSUCHCHANNEL(client.getNickname(), token));
 				continue;
 			}
-			Channel targetChannel = found->second;
-			print_all_about_channel(targetChannel);
+
+			Channel &targetChannel = found->second;
 			if (targetChannel.findJoinClient(client.getNickname()) == false){
 				makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOTONCHANNEL(client.getNickname(), token));
 				continue;
 			}
+
+			// 채널의 접속자 리스트에서 나를 찾아서 삭제
 			for (std::vector<Client *>::iterator it = targetChannel.getClients().begin(); it != targetChannel.getClients().end(); ++it){
-				makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
-				if ((*it)->getNickname() == client.getNickname()) // it's me
-				{
-					if (targetChannel.getClients().size() == 1)
-						server.getChannels().erase(token);
-					else{
-						targetChannel.getClients().erase(it);
-						// --it;
-					}
+				if ((*it)->getNickname() == client.getNickname()){
+					targetChannel.getClients().erase(it);
+					break;
 				}
 			}
+			// 타겟 채널에 아무도 없으면 채널삭제 || 채널이벤트 메세지를 채널 안에 보내기
+			if (targetChannel.getClients().size() == 0)
+				server.getChannels().erase(targetChannel.getChannelName());
+			else{
+				for (std::vector<Client *>::iterator it = targetChannel.getClients().begin(); it != targetChannel.getClients().end(); ++it)
+					makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+			}
+			// client가 접속해있는 채널 리스트에서 타겟삭제
+			for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it){
+				if ((*it)->getChannelName() == targetChannel.getChannelName()){
+					client.getJoinedChannel().erase(it);
+					break;
+				}
+			}			
 		} 
 	}
 	return;
