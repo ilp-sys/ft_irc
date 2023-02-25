@@ -1,5 +1,6 @@
 #include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
+#include <set>
 
 Nick::Nick() : Command(2), SPECIAL("[]\\\\`_^{|}"){}
 
@@ -50,28 +51,42 @@ bool	Nick::isNickExist(std::map<int, Client>& clientList, std::string& candidate
 
 void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-	Server 	&server = Server::getInstance();
-	
-	//이 단계에서 isPassed check
-	if (!checkArgs(cmdlist, client))
-		return ;
-	else if (isNickExist(server.getClients(), cmdlist[1]) == false)
-	{
-		std::cout << B << "HERE" << N << std::endl;
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
+  Server  &server = Server::getInstance();
+  (void)channels;
+
+  if (!checkArgs(cmdlist, client))
+    return ;
+  else if (isNickUnique(server.getClients(), cmdlist[1]) == false)
+    makeWriteEvent(client.getUserSock(), changelist, ERR_NICKNAMEINUSE(client.getNickname(), cmdlist[1]));
+  else
+  {
+    std::string prevName = client.getNickname();
+    client.setNickname(cmdlist[1]);
+    if (client.getIsRegistered() == false)
+    {
+	  if (client.getUserInfo().size() == 4)
+      {
+        client.setIsRegistered();
+        makeWriteEvent(client.getUserSock(), changelist, RPL_WELCOME(client.getNickname(), client.getUserName(), client.getHostName()));
+        return ;
+      }
+    }//TODO: registered 안 되었을 때도 write 할 지 결정하기
+    else
+	{	//내가 존재하는 모든 채널의 유저에게 한번만 write
+		std::set<int> list;
+		list.clear();	//necessary?
+		std::vector<Channel *>::iterator	it;
+		for (it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); it++)
+		{
+			std::vector<Client*>::iterator	cl_it;
+			for (cl_it = (*it)->getClients().begin(); cl_it != (*it)->getClients().end(); cl_it++)
+				list.insert((*cl_it)->getUserSock());
+		}
+		std::set<int>::iterator s_it;
+		for (s_it = list.begin(); s_it != list.end(); s_it++)
+			makeWriteEvent(*(s_it), changelist, SUCCESS_REPL(prevName, mergeVec(cmdlist)));
 	}
-	else
-	{
-		std::string prevName = client.getNickname();
-		client.setNickname(cmdlist[1]);
-		std::cout << R << client.getNickname() << N << std::endl;
-		//_namkim-nick!root@127.0.0.1 NICK :soyoung
-		//TODO: register 되지 않으면, makeWriteEvent 발생하지 않음
-		//USER 명령어로 무엇을 등록하든, root/ip 자리에는 클라이언트가 해석하는 것 같음.
-		//TODO: SUCCESS_REPL 에서 segv
-		// std::string *msg = new std::string(SUCCESS_REPL("prevName", client.getUserName(), client.getHostName(), cmdlist[0]));
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), "YOUR MESSAGE");
-	}
+  }
 }
 
 bool	Nick::isUnique(const std::string& nickname, const std::map<int, Client>& userMap) const
