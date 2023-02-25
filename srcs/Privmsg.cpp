@@ -64,8 +64,7 @@ void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::ve
         //iterate target user to make event
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
         {
-            //TODO: fix hard coded address
-            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), client.getHostName(), "127.0.0.1", mergeMsg(cmdlist)));
+            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
         }
     }
 }

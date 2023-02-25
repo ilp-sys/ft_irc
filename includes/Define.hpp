@@ -105,16 +105,11 @@
 #define RPL_ENDOFNAMES(client, channel) \
     (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
 
-#define SUCCESS_REPL_NEW(nick, cmd) \
-    (":" + nick + " " + std::string(cmd) + "\n")
-
-#define SUCCESS_REPL(nick, client, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
-
-#define SUCCESS_REPL_NICK(prevnick, currnick, user, host, cmd) \
-    (std::string(":") + std::string(prevnick) + std::string("!") + std::string(user) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + " :" + std::string(currnick) + ("\n"))
+#define SUCCESS_REPL(nick, cmd) \
+    (std::string(":") + std::string(nick) + std::string(" ") + std::string(cmd) + "\n")
 
 #define SUCCESS_REPL_KICK(operNick, operUser, operHost, cmd, channel, target, msg) \
     (std::string(":") + std::string(operNick) + std::string("!") + std::string(operUser) + std::string("@") + std::string(operHost) + std::string(" ") + std::string(cmd) + " " + std::string(channel) + " " + std::string(target) + " :" + std::string(msg) + ("\n"))
 
 #endif
+

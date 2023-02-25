@@ -19,6 +19,5 @@ void Pong::execute(std::vector<std::string> &cmdlist, Client &client, std::vecto
 	(void) channels;
 	cmdlist[0] = "PONG";
     if (checkArgs(cmdlist, client))
-        //TODO: replace localhost
-        makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+        makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getUserName(), mergeVec(cmdlist)));
 }

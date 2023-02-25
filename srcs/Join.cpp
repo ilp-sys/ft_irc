@@ -58,7 +58,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             for (std::vector<Client*>::iterator it_cli = existingClient.begin(); it_cli != existingClient.end(); ++it_cli)
             {
                 //TODO: replace to actual ip
-                makeWriteEvent((*it_cli)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+                makeWriteEvent((*it_cli)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeVec(cmdlist)));
                 if ((*it_cli)->getUserSock() == client.getUserSock())
                 {                                              
                     makeWriteEvent((*it_cli)->getUserSock(), changelist, RPL_NAMEREPLY(client.getNickname(), (*it_chan)->getChannelName(), getAllClientName(*it_chan)));
