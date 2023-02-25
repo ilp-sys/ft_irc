@@ -64,15 +64,20 @@ void	Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	//:aaaa!root@127.0.0.1 KICK #target qwer :go away (aaaa가 qwer을 #target에서 쫒아냄. 사유는 go away)
 	std::string	msg;
 	if (cmdlist.size() > 3)
+	{
 		for (int i = 3; i < cmdlist.size(); i++)
-			msg += std::string(cmdlist[i]);	//string merge	
+		{
+			msg += std::string(cmdlist[i]);	//string merge
+			if (i < cmdlist.size() - 1)
+				msg += std::string(" ");
+		}
+	}
 	else
 		msg = std::string("no reason");
-	ch_iter->second.getClients().erase(target);
 	makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL_KICK(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0], cmdlist[1], cmdlist[2], msg));
+	ch_iter->second.getClients().erase(target);
 	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
-		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL_KICK(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0], cmdlist[1], cmdlist[2], msg));
-	//삭제
+		makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL_KICK(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0], cmdlist[1], cmdlist[2], msg));
 }
 
 bool	Kick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
