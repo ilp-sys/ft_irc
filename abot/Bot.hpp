@@ -30,7 +30,7 @@ private :
   char * _server_ip;
   char * _server_pass;
   int _server_port;
-  
+  bool pswd;
   std::string _target;
 
   int _my_sock;
@@ -52,6 +52,7 @@ private :
 
 public :
   Bot(char *ip, int port);
+  Bot(char *ip, int port, char *pass);
   ~Bot();
   void wingChicken();
  };

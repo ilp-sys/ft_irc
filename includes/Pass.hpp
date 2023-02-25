@@ -1,12 +1,13 @@
-#ifndef __KICK_HPP__
-#define __KICK_HPP__
+#ifndef __PASS_HPP__
+# define __PASS_HPP__
 
 #include "Command.hpp"
+#include <vector>
 
-class Kick : public Command
+class Pass : public Command
 {
-    public:
-		Kick();
+	public:
+		Pass();
 		void	execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels);
 		bool	checkArgs(std::vector<std::string>& cmdlist, Client& client);
 };

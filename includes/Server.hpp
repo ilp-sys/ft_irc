@@ -34,28 +34,15 @@ class Server
         std::string _password;
         std::map<int, Client> _clients;
         std::map<std::string, Channel> _channels;
-		std::vector<struct kevent> _changelist;
+        std::vector<struct kevent> _changelist;
 
         Server(){};
     
-    // handle socket EOF (EOF means disconnect)
-    void handleEof(struct kevent &k);
-
-    // event ERROR, print kevent status
-    void handleError(struct kevent &k);
-
-    //set the new client socket to nonblock and add it to changelist
-    void acceptUser();
-
-    // recv
-    void handleRead(struct kevent &k);
-
-    // send
-    void handleWrite(struct kevent &k);
-
-    // test function
-    void testServer(struct kevent &currEvent);
-
+        void handleEof(struct kevent &k);
+        void handleError(struct kevent &k);
+        void acceptUser();
+        void handleRead(struct kevent &k);
+        void handleWrite(struct kevent &k);
 
     public:
 
@@ -65,13 +52,18 @@ class Server
         void cmdsSetup();
         void run();
 
-        std::map<int, Client>&  getClients();
-        std::map<std::string, Channel>&  getChannels();
-		std::vector<struct kevent>& getChangeList();
-
         void setPswd(std::string);
-        std::string getPswd() const;
 
+        std::string                       getPswd() const;
+        std::map<int, Client>&            getClients();
+        std::map<std::string, Channel>&   getChannels();
+        std::vector<struct kevent>&       getChangeList();
+
+        const Client* findUserByNick(std::string target);
+        void close_sequance(void);
 };
+
+std::string mergeVec(const std::vector<std::string> &vec);
+std::string mergeMsg (const std::vector<std::string> &vec);
 
 #endif

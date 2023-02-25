@@ -1,37 +1,62 @@
 #include "../includes/CommandInvoker.hpp"
-#include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
+#include "../includes/User.hpp"
+#include "../includes/Nick.hpp"
+#include "../includes/Pass.hpp"
+#include "../includes/Join.hpp"
+#include "../includes/Part.hpp"
+#include "../includes/Pong.hpp"
+#include "../includes/Kick.hpp"
+#include "../includes/Privmsg.hpp"
+#include "../includes/Notice.hpp"
+#include "../includes/Quit.hpp"
 
 //TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
 {
   _commandMap.insert(std::make_pair("NICK", new Nick()));
-  // _commandMap.insert(std::make_pair("PASS", new Pass()));
-  // _commandMap.insert(std::make_pair("USER", new Client()));
-  // _commandMap.insert(std::make_pair("PONG", new Pong()));
-  // _commandMap.insert(std::make_pair("JOIN", new Join()));
-  // _commandMap.insert(std::make_pair("PART", new Part()));
-  // _commandMap.insert(std::make_pair("QUIT", new Quit()));
-  // _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
-  // _commandMap.insert(std::make_pair("NOTICE", new Notice()));
+  _commandMap.insert(std::make_pair("USER", new User()));
+  _commandMap.insert(std::make_pair("PASS", new Pass()));
+   _commandMap.insert(std::make_pair("PING", new Pong()));	//
+   _commandMap.insert(std::make_pair("JOIN", new Join()));
+  _commandMap.insert(std::make_pair("PART", new Part()));
+  _commandMap.insert(std::make_pair("KICK", new Kick()));
+  _commandMap.insert(std::make_pair("QUIT", new Quit()));
+   _commandMap.insert(std::make_pair("PRIVMSG", new Privmsg()));
+   _commandMap.insert(std::make_pair("NOTICE", new Notice()));
 }
 
-int CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
+void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-  int res;
-  
-  //TODO: Set Common Errors ex) no such commands
-  if (_commandMap.find(cmdline[0]) == _commandMap.end())
-  {
-    std::cout << "no command" << std::endl;
-    return (false);
-  }
-  else
-  {
-    Client &client = Server::getInstance().getClients().find(ident)->second;
-    Command *command = _commandMap.find(cmdline[0])->second;
-    return (command->execute(cmdline, client, changelist, NULL));
-  }
+	//TODO: Set Common Errors ex) no such commands
+	Server& server = Server::getInstance();
+	Client &client = server.getClients().find(ident)->second;
+	if (_commandMap.find(cmdline[0]) == _commandMap.end())
+	{
+		_commandMap["nick"]->makeWriteEvent(ident, changelist, ERR_UNKNOWNCOMMAND(client.getNickname(), cmdline[0]));
+		return ;
+	}
+	//pass하지 않은 상태라면, PASS 밖에 실행 못함!
+	if (client.getIsPassed() == false)
+	{
+		//TODO: writing event
+		if (cmdline[0] != "PASS")
+		{
+			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
+			return ;
+		}
+	}
+	else if (client.getIsRegistered() == false)
+	{
+		//TODO: writing event
+		if (cmdline[0] != "NICK" && cmdline[0] != "USER")
+		{
+			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
+			return ;
+		}
+	}
+	Command *command = _commandMap.find(cmdline[0])->second;
+	command->execute(cmdline, client, changelist, channels);	//
 }
 
 
@@ -64,7 +89,8 @@ void  CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>
   {
     while (msg[idx + len] != ' ' && msg[idx + len] != ':' && msg[idx + len] != '\0')
       len++;
-    cmdline.push_back(msg.substr(idx, len));
+    if (len > 0)
+      cmdline.push_back(msg.substr(idx, len));
     if (msg[idx + len] == ':')
     {
       cmdline.push_back(msg.substr(idx + len));
@@ -77,16 +103,33 @@ void  CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>
 
 void CommandInvoker::commandConnector(int ident, const std::string& message)
 {
+	// (void)ident;
   Server& server = Server::getInstance();
   std::vector<std::string> commands;
   std::vector<std::string> cmdline;
 
-  //TODO: fix/check newline before colon
   parseString(message, commands);
   std::vector<std::string>::iterator  it;
   for (it = commands.begin(); it < commands.end(); it++)
   {
+	if (*it == "CAP LS" || isStartWith(*it, "MODE"))
+		continue ;
+	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
-    executeCommand(cmdline, ident, server.getChangeList(), NULL);
+    executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
   }
+}
+
+bool  CommandInvoker::isStartWith(const std::string& target, const std::string& ref) const
+{
+	int	i;
+	int	len;
+
+	len = ref.size();
+	for (i = 0; i < len; i++)
+	{
+		if (target[i] != ref[i])
+			return (false);
+	}
+	return (true);
 }

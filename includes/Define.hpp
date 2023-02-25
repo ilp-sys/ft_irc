@@ -38,13 +38,30 @@
 	<< "Socket[" << ident << "] filter : " << filter \
 	<< N << std::endl;
 
+//welcome
+//:irc.local 001 @NIck :Welcome to the Localnet IRC Network @NICK!@USER@@HOST
+#define RPL_WELCOME(clientNick, clientUser, clientHost) \
+    (std::string(":ircserv 001 ") + std::string(clientNick) + std::string(" :Welcome to the Localnet IRC PRIME Network ") + std::string(clientNick) + "!" + std::string(clientUser) + "@" + std::string(clientHost) + "\n")
+
 //unknown command
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
     (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
 
+//ERR_USERNOTINCHANNEL
+#define ERR_USERNOTINCHANNEL(operator, target, channel) \
+    (std::string(":ircserv 441 ") + std::string(operator) + std::string(" ") + std::string(target) + " " + std::string(channel) + " :They are not on that channel\n")
+
+//Unauthorized command (not registered)
+#define ERR_NOTREGISTERED(client, cmd) \
+    (std::string(":ircserv 451 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :You have not registered\n")
+
 //all commands
 #define ERR_NEEDMOREPARAMS(client, cmd) \
     (std::string(":ircserv 461 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Not enough parameters\n")
+
+//
+#define ERR_ALREADYREGISTRED(client, cmd) \
+    (std::string(":ircserv 462 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unauthorized command (already registered)\n")
 
 //nick
 #define ERR_ERRONEOUSNICKNAME(client, nick) \
@@ -82,7 +99,14 @@
 #define ERR_NOORIGIN(client) \
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
-#define SUCCESS_REPL(nick, client, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
+#define RPL_NAMEREPLY(client, channel, clientList) \
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + " :" + std::string(clientList) + "\n")
+
+#define RPL_ENDOFNAMES(client, channel) \
+    (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
+
+#define SUCCESS_REPL(nick, cmd) \
+    (std::string(":") + std::string(nick) + std::string(" ") + std::string(cmd) + "\n")
 
 #endif
+
