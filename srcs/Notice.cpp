@@ -8,7 +8,7 @@ Notice::Notice() : Command(2) {}
 bool  Notice::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
     Server& server = Server::getInstance();
-    if (cmdlist.size() - 1 < getRequiredArgsNumber())
+    if (static_cast<int>(cmdlist.size()) - 1 < getRequiredArgsNumber())
     {
         makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS("client.getUserName()", mergeVec(cmdlist)));
         return (false);
@@ -18,6 +18,7 @@ bool  Notice::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 
 void Notice::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
+	(void) changelist;
     std::vector<Channel*> targetChannel;
     std::vector<Client*> targetUser;
 
@@ -33,7 +34,7 @@ void Notice::execute(std::vector<std::string>& cmdlist, Client& client, std::vec
             if (token[0] == '#')
             {
                 token.erase(0, 1);
-                std::map<std::string, Channel>::iterator found = server.getChannels().find(token);
+                std::map<std::string, Channel>::iterator found = channels->find(token);
                 if (found != Server::getInstance().getChannels().end())
                     targetChannel.push_back(&found->second);
             }
@@ -60,7 +61,7 @@ void Notice::execute(std::vector<std::string>& cmdlist, Client& client, std::vec
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
         {
             //TODO: fix hard coded address
-            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getUserName(), client.getHostName(), "127.0.0.1", mergeMsg(cmdlist)));
+            makeWriteEvent((*it)->getUserSock(), changelist, SUCCESS_REPL(client.getUserName(), mergeMsg(cmdlist)));
         }
     }
 }

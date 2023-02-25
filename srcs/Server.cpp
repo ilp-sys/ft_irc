@@ -54,7 +54,7 @@ void Server::run()
           else if (eventlist[i].flags & EV_ERROR)
             this->handleError(eventlist[i]);
           else{
-            if (eventlist[i].ident == _servSock)
+            if (static_cast<int>(eventlist[i].ident) == _servSock)
               this->acceptUser();
             else if (eventlist[i].filter == EVFILT_READ)
               this->handleRead(eventlist[i]);
@@ -66,16 +66,31 @@ void Server::run()
             }
           }
         }
+        close_sequance();
     }
+}
+
+void Server::close_sequance(void){
+  std::vector<int> close_fd;
+  for (std::map<int,Client>::iterator it = _clients.begin(); it != _clients.end(); ++it){
+    if (it->second.getIsQuit() == true){
+      close(it->second.getUserSock());
+      close_fd.push_back(it->second.getUserSock());
+    }
+  }
+  for (std::vector<int>::reverse_iterator it = close_fd.rbegin(); it != close_fd.rend(); ++it)
+    _clients.erase(*it);
 }
 
 void Server::handleEof(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags EOF, Client disconnected", R);
   close(k.ident);
+  // TODO : 서버 클라이언트 리스트에서 클라이언트 지우기
 }
 
 void Server::handleError(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags ERROR", R);
+  PRINT_EVENT(k.ident, k.flags, k.filter, k.fflags, k.data, k.udata, R);
   close(k.ident);
 };
 

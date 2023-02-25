@@ -47,6 +47,10 @@
 #define ERR_UNKNOWNCOMMAND(client, cmd) \
     (std::string(":ircserv 421 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :Unknown command\n")
 
+//ERR_USERNOTINCHANNEL
+#define ERR_USERNOTINCHANNEL(operator, target, channel) \
+    (std::string(":ircserv 441 ") + std::string(operator) + std::string(" ") + std::string(target) + " " + std::string(channel) + " :They are not on that channel\n")
+
 //Unauthorized command (not registered)
 #define ERR_NOTREGISTERED(client, cmd) \
     (std::string(":ircserv 451 ") + std::string(client) + std::string(" ") + std::string(cmd) + " :You have not registered\n")
@@ -96,15 +100,16 @@
     (std::string(":ircserv 409 ") + std::string(client) + " :No origin specified\n")
 
 #define RPL_NAMEREPLY(client, channel, clientList) \
-    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + ":" + std::string(clientList) + "\n")
+    (std::string(":ircserv 353 ") + std::string(client) + " = #" + std::string(channel) + " :" + std::string(clientList) + "\n")
 
 #define RPL_ENDOFNAMES(client, channel) \
     (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
 
-#define SUCCESS_REPL(nick, client, host, cmd) \
-    (std::string(":") + std::string(nick) + std::string("!") + std::string(client) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + "\n")
+#define SUCCESS_REPL(nick, cmd) \
+    (std::string(":") + std::string(nick) + std::string(" ") + std::string(cmd) + "\n")
 
-#define SUCCESS_REPL_NICK(prevnick, currnick, user, host, cmd) \
-    (std::string(":") + std::string(prevnick) + std::string("!") + std::string(user) + std::string("@") + std::string(host) + std::string(" ") + std::string(cmd) + " :" + std::string(currnick) + ("\n"))
+#define SUCCESS_REPL_KICK(operNick, operUser, operHost, cmd, channel, target, msg) \
+    (std::string(":") + std::string(operNick) + std::string("!") + std::string(operUser) + std::string("@") + std::string(operHost) + std::string(" ") + std::string(cmd) + " " + std::string(channel) + " " + std::string(target) + " :" + std::string(msg) + ("\n"))
 
 #endif
+

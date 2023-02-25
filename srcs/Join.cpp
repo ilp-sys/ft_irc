@@ -39,17 +39,17 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
                 continue;
             }
             token.erase(0, 1);
-
+            if (channels->find(token)->second.findJoinClient(client.getNickname()) == true)
+                return;
             if (channels->find(token) == channels->end())
             {
-                Channel *newChan = new Channel(token, client.getUserSock());
-                channels->insert(std::make_pair(token, *newChan));
-                targetChannel.push_back(newChan);
+                channels->insert(std::make_pair(token, Channel(token, client.getUserSock())));
+                targetChannel.push_back(&(channels->find(token)->second));
             }
             else
                 targetChannel.push_back(&(channels->find(token)->second));
             targetChannel.back()->addClient(&client);
-            //client.getJoinedChannel().push_back(targetChannel.back());
+            client.getJoinedChannel().push_back(targetChannel.back());
         }
         //generate write events for all the clients
         for (std::vector<Channel*>::iterator it_chan = targetChannel.begin(); it_chan != targetChannel.end(); ++it_chan)
@@ -58,7 +58,7 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             for (std::vector<Client*>::iterator it_cli = existingClient.begin(); it_cli != existingClient.end(); ++it_cli)
             {
                 //TODO: replace to actual ip
-                makeWriteEvent((*it_cli)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+                makeWriteEvent((*it_cli)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeVec(cmdlist)));
                 if ((*it_cli)->getUserSock() == client.getUserSock())
                 {                                              
                     makeWriteEvent((*it_cli)->getUserSock(), changelist, RPL_NAMEREPLY(client.getNickname(), (*it_chan)->getChannelName(), getAllClientName(*it_chan)));
