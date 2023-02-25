@@ -71,6 +71,7 @@ void Server::run()
 }
 
 void Server::close_sequance(void){
+  std::cout << "in close_sequnce\n";
   std::vector<int> close_fd;
   for (std::map<int,Client>::iterator it = _clients.begin(); it != _clients.end(); ++it){
     if (it->second.getIsQuit() == true){
@@ -84,12 +85,18 @@ void Server::close_sequance(void){
 
 void Server::handleEof(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags EOF, Client disconnected", R);
-  // TODO: 등록 전/후, 클로즈 여부 조건 상세히 나누기
-  int ret = close(k.ident);
-  if (ret != -1){
+  Client &client = _clients.find(k.ident)->second;
+  if (client.getIsPassed() == false){
+    close(k.ident);
     _clients.erase(k.ident);
+    return ;
   }
-  // TODO : 서버 클라이언트 리스트에서 클라이언트 지우기
+  else if (client.getIsRegistered() == false){
+    client.setIsRegistered();
+  }
+  client.getBuffer() = "QUIT\r\n";
+  _invoker.commandConnector(k.ident, client.getBuffer().data());
+  client.getBuffer().clear();
 }
 
 void Server::handleError(struct kevent &k){
