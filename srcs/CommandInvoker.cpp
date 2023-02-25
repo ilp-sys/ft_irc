@@ -117,6 +117,8 @@ void CommandInvoker::commandConnector(int ident, const std::string& message)
 	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
     executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
+	if (isStartWith(*it, "PASS") && !isStartWith(*it, "PASS 1234"))
+		return ;
   }
 }
 
