@@ -6,7 +6,7 @@ Quit::Quit() : Command(1){};
 void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels){
   Server &server = Server::getInstance();
   (void) channels;
-  // client.setIsQuit();
+  client.setIsQuit();
   // 내가접속한 채널들 돌면서 나를 찾아서 제거
   for (std::vector<Channel *>::iterator joinedChannelIt = client.getJoinedChannel().begin(); joinedChannelIt != client.getJoinedChannel().end(); ++joinedChannelIt ){
     if ((*joinedChannelIt)->getClients().size() == 0)

@@ -84,7 +84,11 @@ void Server::close_sequance(void){
 
 void Server::handleEof(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags EOF, Client disconnected", R);
-  close(k.ident);
+  // TODO: 등록 전/후, 클로즈 여부 조건 상세히 나누기
+  int ret = close(k.ident);
+  if (ret != -1){
+    _clients.erase(k.ident);
+  }
   // TODO : 서버 클라이언트 리스트에서 클라이언트 지우기
 }
 
