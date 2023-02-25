@@ -60,6 +60,7 @@ class Server
         std::vector<struct kevent>&       getChangeList();
 
         const Client* findUserByNick(std::string target);
+        void close_sequance(void);
 };
 
 std::string mergeVec(const std::vector<std::string> &vec);

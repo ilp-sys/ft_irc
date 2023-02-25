@@ -66,7 +66,20 @@ void Server::run()
             }
           }
         }
+        close_sequance();
     }
+}
+
+void Server::close_sequance(void){
+  std::vector<int> close_fd;
+  for (std::map<int,Client>::iterator it = _clients.begin(); it != _clients.end(); ++it){
+    if (it->second.getIsQuit() == true){
+      close(it->second.getUserSock());
+      close_fd.push_back(it->second.getUserSock());
+    }
+  }
+  for (std::vector<int>::reverse_iterator it = close_fd.rbegin(); it != close_fd.rend(); ++it)
+    _clients.erase(*it);
 }
 
 void Server::handleEof(struct kevent &k){
