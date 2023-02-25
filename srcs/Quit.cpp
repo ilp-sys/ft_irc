@@ -4,26 +4,35 @@
 Quit::Quit() : Command(1){};
 
 void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels){
-	Server server = Server::getInstance();
+	Server &server = Server::getInstance();
 
-	std::vector<Channel *> joinedChannel = client.getJoinedChannel();
-	for(std::vector<Channel *>::iterator jIt = joinedChannel.begin(); jIt != joinedChannel.end(); ++jIt){
-		Channel * targetChannel = *jIt;
-		for (std::vector<Client *>::iterator tIt = targetChannel->getClients().begin(); tIt != targetChannel->getClients().end(); ++tIt){
-			if ((*tIt)->getNickname() == client.getNickname()){
-				if ((*jIt)->getClients().size() == 1)
-					{
-						//TODO channel delete
-						server.getChannels().erase((*jIt)->getChannelName());
-					}
-					else{
-						targetChannel->getClients().erase(tIt);
-						tIt--;
-					}
+	// client.setIsQuit();
+	// 내가접속한 채널들 돌면서 나를 찾아서 제거
+	for (std::vector<Channel *>::iterator joinedChannelIt = client.getJoinedChannel().begin(); joinedChannelIt != client.getJoinedChannel().end(); ++joinedChannelIt ){
+		for (std::vector<Client *>::iterator in = (*joinedChannelIt)->getClients().begin(); in != (*joinedChannelIt)->getClients().end(); ++in){
+			if ((*in)->getNickname() == client.getNickname()){
+				(*joinedChannelIt)->getClients().erase(in);
+				if ((*joinedChannelIt)->getClients().size() > 0)
+					(*joinedChannelIt)->setOpFd((*joinedChannelIt)->getClients().front()->getUserSock());
+				break;
 			}
-			makeWriteEvent((*tIt)->getUserSock(), server.getChangeList(), SUCCESS_REPL("(*tIt)->getUserName()", "(*tIt)->getHostName()", "127.0.0.1", mergeVec(cmdlist)));
-		}
+		} 
 	}
+	// 내가 접속한 채널 돌면서 quit 메세지 전송
+	for (std::vector<Channel *>::iterator joinedChannelIt = client.getJoinedChannel().begin(); joinedChannelIt != client.getJoinedChannel().end(); ++joinedChannelIt ){
+		for (std::vector<Client *>::iterator in = (*joinedChannelIt)->getClients().begin(); in != (*joinedChannelIt)->getClients().end(); ++in) // TODO: 어떤 조건일 때 터지는지 조사가 필요함
+			makeWriteEvent((*in)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), "", "", mergeVec(cmdlist)));
+	}
+	
+	// 내가 제거된 채널에 더이상 클라이언트가 없으면 서버에서 제거
+	for (std::vector<Channel *>::iterator joinedChannelIt = client.getJoinedChannel().begin(); joinedChannelIt != client.getJoinedChannel().end(); ++joinedChannelIt ){
+		if ((*joinedChannelIt)->getClients().size() == 0)
+			server.getChannels().erase((*joinedChannelIt)->getChannelName());
+	}
+	struct kevent k;
+	void * v;
+	EV_SET(&k, client.getUserSock(), EVFILT_WRITE, EV_EOF, 0,0,v);
+	changelist.push_back(k);
 }
 
 bool  Quit::checkArgs(std::vector<std::string>& cmdlist, Client& client){

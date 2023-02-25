@@ -16,6 +16,7 @@ class Client
         std::string _buffer;
 		bool	_isPassed;
 		bool	_isRegistered;
+        bool    _isQuit;
         std::vector<Channel*> _joinedChannel; //
     public:
         Client(int fd);
@@ -31,11 +32,14 @@ class Client
 		std::vector<Channel*>& getJoinedChannel(void);
 		bool getIsRegistered();
 		bool getIsPassed();
+        bool getIsQuit();
 
         void setNickname(const std::string& name);
 		void setUserInfo(const std::string& string);
 		void setIsRegistered();
 		void setIsPassed();
+        void setIsQuit();
+        
 };
 
 #endif
