@@ -108,8 +108,5 @@
 #define SUCCESS_REPL(nick, cmd) \
     (std::string(":") + std::string(nick) + std::string(" ") + std::string(cmd) + "\n")
 
-#define SUCCESS_REPL_KICK(operNick, operUser, operHost, cmd, channel, target, msg) \
-    (std::string(":") + std::string(operNick) + std::string("!") + std::string(operUser) + std::string("@") + std::string(operHost) + std::string(" ") + std::string(cmd) + " " + std::string(channel) + " " + std::string(target) + " :" + std::string(msg) + ("\n"))
-
 #endif
 
