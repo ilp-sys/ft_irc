@@ -45,7 +45,7 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 				server.getChannels().erase(targetChannel.getChannelName());
 			else{
 				for (std::vector<Client *>::iterator it = targetChannel.getClients().begin(); it != targetChannel.getClients().end(); ++it)
-					makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL((*it)->getUserName(), (*it)->getHostName(), "127.0.0.1", mergeVec(cmdlist)));
+					makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL_NEW(client.getNickname(), mergeVec(cmdlist)));
 			}
 			// client가 접속해있는 채널 리스트에서 타겟삭제
 			for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it){
