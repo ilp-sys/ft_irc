@@ -94,7 +94,7 @@ std::string Bot::watching(){
 	char recv_buf[1024];
 	memset(recv_buf, 0, 1024);
 	int received_bytes = recv(_my_sock, recv_buf, sizeof(recv_buf), 0); //recv blocking(?)
-	if (received_bytes < 0) {
+	if (received_bytes <= 0) {
 		// maybe server off
 		PRINT_LOG("failed to connect server", "ERROR", R);
 		exit(1);
@@ -132,17 +132,17 @@ std::string Bot::thinking(std::string watched_msg){
 
 std::string Bot::make_sense(std::string bot_cmd){
 	std::string msg = "";
-	if (bot_cmd == "!bot\r\n")
-		msg = std::string("PRIVMSG " + _target + " :Did you miss me?\r\n");
-	else if (bot_cmd == "!swang\r\n")
-		msg = std::string("PRIVMSG " + _target + " :taylor swangft\r\n");
-	else if (bot_cmd == "!jiwahn\r\n")
-		msg = std::string("PRIVMSG " + _target + " :vim master\r\n");
-	else if (bot_cmd == "!namkim\r\n")
-		msg = std::string("PRIVMSG " + _target + " :south.k\r\n"); 
-	else if (bot_cmd == "!hum\r\n")
-		msg = std::string("PRIVMSG " + _target + " :nyaring.......\r\n"); 
-	else if (bot_cmd == "!date\r\n"){
+	if (bot_cmd == "!bot \n")
+		msg += std::string("PRIVMSG " + _target + " :Did you miss me?\r\n");
+	else if (bot_cmd == "!swang \n")
+		msg += std::string("PRIVMSG " + _target + " :taylor swangft\r\n");
+	else if (bot_cmd == "!jiwahn \n")
+		msg += std::string("PRIVMSG " + _target + " :vim master\r\n");
+	else if (bot_cmd == "!namkim \n")
+		msg += std::string("PRIVMSG " + _target + " :south.k\r\n"); 
+	else if (bot_cmd == "!hum \n")
+		msg += std::string("PRIVMSG " + _target + " :nyaring.......\r\n"); 
+	else if (bot_cmd == "!date \n"){
 		time_t now;
 		struct tm *tm_now;
 		char time_str[9]; // YYYYMMDD\0
