@@ -23,7 +23,7 @@ void  Quit::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
   // 내가 접속한 채널 돌면서 quit 메세지 전송
   for (std::vector<Channel *>::iterator joinedChannelIt = client.getJoinedChannel().begin(); joinedChannelIt != client.getJoinedChannel().end(); ++joinedChannelIt ){
     for (std::vector<Client *>::iterator in = (*joinedChannelIt)->getClients().begin(); in != (*joinedChannelIt)->getClients().end(); ++in) // TODO: 어떤 조건일 때 터지는지 조사가 필요함
-      makeWriteEvent((*in)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), mergeVec(cmdlist)));
+      makeWriteEvent((*in)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeVec(cmdlist)));
   }
   
   // 내가 제거된 채널에 더이상 클라이언트가 없으면 서버에서 제거

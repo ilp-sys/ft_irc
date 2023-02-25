@@ -117,6 +117,8 @@ void CommandInvoker::commandConnector(int ident, const std::string& message)
 	std::cout << B << *it << N << std::endl;
     parseLine(*it, cmdline);
     executeCommand(cmdline, ident, server.getChangeList(), &server.getChannels());
+	if (cmdline[0] == "PASS" && cmdline[1] != std::string(server.getPswd()))
+		return ;
   }
 }
 
@@ -126,7 +128,7 @@ bool  CommandInvoker::isStartWith(const std::string& target, const std::string& 
 	int	len;
 
 	len = ref.size();
-	for (i = 0; i < len; i++)
+	for (i = 0; i < len + 1; i++)
 	{
 		if (target[i] != ref[i])
 			return (false);

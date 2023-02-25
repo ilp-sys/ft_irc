@@ -17,7 +17,7 @@ void  Pass::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 	}
 	if (cmdlist[1] != Server::getInstance().getPswd())
 	{
-		//wrong->ignore
+		client.setIsQuit();
 		return ;
 	}
 	client.setIsPassed();
