@@ -6,11 +6,13 @@ Kick::Kick() : Command(3){}	//args는 3일 수도 있고 4일 수도 있다 3까
 
 void	Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
+	if (checkArgs(cmdlist, client) == false)
+		return ;
 	Server server = Server::getInstance();
 	std::map<std::string, Channel>::iterator	ch_iter;
-	//존재하지 않는 채널 - 그런 채널은 없다
 	std::string token = cmdlist[1];
 	token.erase(0, 1);
+	//channel check
 	for (ch_iter = channels->begin(); ch_iter != channels->end(); ch_iter++)
 	{
 		if (ch_iter->second.getChannelName() == token)
@@ -19,6 +21,18 @@ void	Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	if (ch_iter == channels->end())
 	{
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NOSUCHCHANNEL(client.getNickname(), cmdlist[1]));
+		return ;
+	}
+	//you are not on the list
+	if (ch_iter->second.findJoinClient(client.getNickname()) == false)
+	{
+		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NOTONCHANNEL(client.getNickname(), cmdlist[1]));
+		return ;
+	}
+	//is not operator
+	if (ch_iter->second.getOpFd() != client.getUserSock())
+	{
+		makeWriteEvent(client.getUserSock(), changelist, ERR_CHANOPRIVSNEEDED(client.getNickname(), cmdlist[1]));
 		return ;
 	}
     std::map<int, Client> clients = server.getClients();
@@ -48,12 +62,16 @@ void	Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	}
 	//다 존재하면? 해당 채널에서 user 삭제하고 모든 채널의 유저에게 메세지를 던진다
 	//:aaaa!root@127.0.0.1 KICK #target qwer :go away (aaaa가 qwer을 #target에서 쫒아냄. 사유는 go away)
-	std::string msg = "";	//TODO: check
-	if (cmdlist.size() == 4)
-		msg = cmdlist[3];	
-	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
-		makeWriteEvent((*target)->getUserSock(), changelist, SUCCESS_REPL_KICK((*target)->getNickname(), (*target)->getUserName(), (*target)->getHostName(), cmdlist[1], cmdlist[2], cmdlist[3], msg));
+	std::string	msg;
+	if (cmdlist.size() > 3)
+		for (int i = 3; i < cmdlist.size(); i++)
+			msg += std::string(cmdlist[i]);	//string merge	
+	else
+		msg = std::string("no reason");
 	ch_iter->second.getClients().erase(target);
+	makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL_KICK(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0], cmdlist[1], cmdlist[2], msg));
+	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
+		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL_KICK(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0], cmdlist[1], cmdlist[2], msg));
 	//삭제
 }
 
