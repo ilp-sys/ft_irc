@@ -1,5 +1,6 @@
 #include "../includes/Nick.hpp"
 #include "../includes/Server.hpp"
+#include <set>
 
 Nick::Nick() : Command(2), SPECIAL("[]\\\\`_^{|}"){}
 
@@ -72,15 +73,30 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
     std::string prevName = client.getNickname();
     client.setNickname(cmdlist[1]);
     if (client.getIsRegistered() == false)
-      if (client.getUserInfo().size() == 4)
+    {
+	    if (client.getUserInfo().size() == 4)
       {
         client.setIsRegistered();
         makeWriteEvent(client.getUserSock(), changelist, RPL_WELCOME(client.getNickname(), client.getUserName(), client.getHostName()));
         return ;
       }
-    //TODO: registered 안 되었을 때도 write 할 지 결정하기
-    if (client.getIsRegistered() == true)
-      makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, mergeVec(cmdlist)));
+    }//TODO: registered 안 되었을 때도 write 할 지 결정하기
+    else
+	  {	//내가 존재하는 모든 채널의 유저에게 한번만 write
+      std::set<int> list;
+      list.clear();	//necessary?
+      std::vector<Channel *>::iterator	it;
+      for (it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); it++)
+      {
+        std::vector<Client*>::iterator	cl_it;
+        for (cl_it = (*it)->getClients().begin(); cl_it != (*it)->getClients().end(); cl_it++)
+          list.insert((*cl_it)->getUserSock());
+      }
+      std::set<int>::iterator s_it;
+      for (s_it = list.begin(); s_it != list.end(); s_it++)
+        makeWriteEvent(*(s_it), changelist, SUCCESS_REPL(prevName, mergeVec(cmdlist)));
+	  }
   }
 }
+
 
