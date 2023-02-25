@@ -54,7 +54,7 @@ void Server::run()
           else if (eventlist[i].flags & EV_ERROR)
             this->handleError(eventlist[i]);
           else{
-            if (eventlist[i].ident == _servSock)
+            if (static_cast<int>(eventlist[i].ident) == _servSock)
               this->acceptUser();
             else if (eventlist[i].filter == EVFILT_READ)
               this->handleRead(eventlist[i]);
