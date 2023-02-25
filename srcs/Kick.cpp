@@ -65,7 +65,7 @@ void	Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 	std::string	msg;
 	if (cmdlist.size() > 3)
 	{
-		for (int i = 3; i < cmdlist.size(); i++)
+		for (unsigned long i = 3; i < cmdlist.size(); i++)
 		{
 			msg += std::string(cmdlist[i]);	//string merge
 			if (i < cmdlist.size() - 1)

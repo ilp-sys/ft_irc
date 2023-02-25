@@ -28,7 +28,7 @@ void	User::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
 }
 bool	User::checkArgs(std::vector<std::string>& cmdlist, Client& client)
 {
-	if (cmdlist.size() < getRequiredArgsNumber())
+	if (static_cast<int>(cmdlist.size()) < getRequiredArgsNumber())
 	{
 		makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
 		return (false);

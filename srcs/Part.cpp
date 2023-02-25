@@ -10,7 +10,7 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 	Server& server = Server::getInstance();
 	
 	if (cmdlist.size() < 2){
-		makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), "PART"));
+		makeWriteEvent(client.getUserSock(), changelist, ERR_NEEDMOREPARAMS(client.getNickname(), "PART"));
 	}
 	else {
 		std::stringstream ss(cmdlist[1]);
@@ -19,7 +19,7 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 		{
 			token.erase(0, 1);
 			
-			std::map<std::string, Channel>::iterator found = server.getChannels().find(token);
+			std::map<std::string, Channel>::iterator found = channels->find(token);
 			if (found == Server::getInstance().getChannels().end()){
 				makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NOSUCHCHANNEL(client.getNickname(), token));
 				continue;
@@ -59,5 +59,7 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 	return;
 }
 bool  Part::checkArgs(std::vector<std::string>& cmdlist, Client& client){
+	(void) cmdlist;
+	(void) client;
 	return true;
 }
