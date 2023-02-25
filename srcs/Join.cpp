@@ -39,7 +39,8 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
                 continue;
             }
             token.erase(0, 1);
-
+            if (channels->find(token)->second.findJoinClient(client.getNickname()) == true)
+                return;
             if (channels->find(token) == channels->end())
             {
                 channels->insert(std::make_pair(token, Channel(token, client.getUserSock())));

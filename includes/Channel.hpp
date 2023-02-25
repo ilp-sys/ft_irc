@@ -20,6 +20,7 @@ class Channel
 
         std::string getChannelName() const;
         int getOpFd() const;
+        void setOpFd(int);
 };
 
 
