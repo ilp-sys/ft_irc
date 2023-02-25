@@ -1,6 +1,6 @@
 #include "../includes/Client.hpp"
 
-Client::Client(int fd): _userSock(fd), _nickname("*"), _isPassed(false), _isRegistered(false){}
+Client::Client(int fd): _userSock(fd), _nickname("*"), _isPassed(false), _isRegistered(false), _isQuit(false){}
 
 int	Client::getUserSock(void) const
 {
@@ -49,6 +49,9 @@ void	Client::setUserInfo(const std::string& string)
 
 bool	Client::getIsRegistered(void){ return ( _isRegistered ); }
 bool	Client::getIsPassed(void){ return ( _isPassed ); }
+
+bool	Client::getIsQuit(void){ return ( _isQuit ); }
+void	Client::setIsQuit(void){ _isQuit = true; }
 
 void	Client::setIsRegistered(void){ _isRegistered = true; }
 void	Client::setIsPassed(void){ _isPassed = true; }
