@@ -72,10 +72,12 @@ void Server::run()
 void Server::handleEof(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags EOF, Client disconnected", R);
   close(k.ident);
+  // TODO : 서버 클라이언트 리스트에서 클라이언트 지우기
 }
 
 void Server::handleError(struct kevent &k){
   PRINT_LOG(k.ident, "SERVER : flags ERROR", R);
+  PRINT_EVENT(k.ident, k.flags, k.filter, k.fflags, k.data, k.udata, R);
   close(k.ident);
 };
 
