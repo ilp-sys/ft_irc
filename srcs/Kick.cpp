@@ -8,7 +8,7 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 {
   if (checkArgs(cmdlist, client) == false)
     return ;
-  Server server = Server::getInstance();
+  Server &server = Server::getInstance();
   std::map<std::string, Channel>::iterator  ch_iter;
   std::string token = cmdlist[1];
   token.erase(0, 1);
@@ -72,12 +72,25 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
         msg += std::string(" ");
     }
   }
-  else
+  else // I think is not working @wsehyeon
     msg = std::string("no reason");
   makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
-  ch_iter->second.getClients().erase(target);
-  for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
+  ch_iter->second.getClients().erase(target); // 채널 안에 나 지우기 얘는 이터레이터 pos가 호환되는 애 맞음
+  for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it ){
+	if ((*it)->getChannelName() == cmdlist[1].erase(0,1)){
+		client.getJoinedChannel().erase(it);// 내 안에 채널 지우기
+		break;
+	}
+  }
+  // 방장 위임 또는 채널 폐쇄
+  if (ch_iter->second.getClients().size() > 0){
+	ch_iter->second.setOpFd(ch_iter->second.getClients().front()->getUserSock());
+	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
     makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+  }
+  else{
+	server.getChannels().erase(cmdlist[1].erase(0, 1));
+  }
 }
 
 bool  Kick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
