@@ -67,13 +67,13 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
   if (cmdlist.size() < 4)
 	cmdlist.push_back("no reason");
   makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
-  ch_iter->second.getClients().erase(target); // 채널 안에 나 지우기 얘는 이터레이터 pos가 호환되는 애 맞음
-  for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it ){
+  for (std::vector<Channel *>::iterator it = (*target)->getJoinedChannel().begin(); it != (*target)->getJoinedChannel().end(); ++it ){
 	if ((*it)->getChannelName() == token){
-		client.getJoinedChannel().erase(it);// 내 안에 채널 지우기
+		(*target)->getJoinedChannel().erase(it);// 내 안에 채널 지우기
 		break;
 	}
   }
+  ch_iter->second.getClients().erase(target); // 채널 안에 나 지우기 얘는 이터레이터 pos가 호환되는 애 맞음
   // 방장 위임 또는 채널 폐쇄
   if (ch_iter->second.getClients().size() > 0){
 	ch_iter->second.setOpFd(ch_iter->second.getClients().front()->getUserSock());
