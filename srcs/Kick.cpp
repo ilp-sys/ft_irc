@@ -77,9 +77,33 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 
   //trim cmdlist
   if (cmdlist.size() == 4 && cmdlist[3] == ":")
+<<<<<<< HEAD
       cmdlist.pop_back();
   else if (cmdlist.size() < 4)
       cmdlist.push_back("no reason");
+=======
+	cmdlist.pop_back();
+  if (cmdlist.size() < 4)
+	cmdlist.push_back("no reason");
+  makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+  for (std::vector<Channel *>::iterator it = (*target)->getJoinedChannel().begin(); it != (*target)->getJoinedChannel().end(); ++it ){
+	if ((*it)->getChannelName() == token){
+		(*target)->getJoinedChannel().erase(it);// 내 안에 채널 지우기
+		break;
+	}
+  }
+  ch_iter->second.getClients().erase(target); // 채널 안에 나 지우기 얘는 이터레이터 pos가 호환되는 애 맞음
+  // 방장 위임 또는 채널 폐쇄
+  if (ch_iter->second.getClients().size() > 0){
+	ch_iter->second.setOpFd(ch_iter->second.getClients().front()->getUserSock());
+	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
+    	makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+  }
+  else{
+	server.getChannels().erase(cmdlist[1].erase(0, 1));
+  }
+}
+>>>>>>> 8a306370bd9becb5df34f160a5c635f7950d5688
 
   //notify to all users in the channel -> didn't erase yet
   for (std::vector<Client*>::iterator it = servChanIter->second.getClients().begin(); it != servChanIter->second.getClients().end(); ++it)
