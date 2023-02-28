@@ -71,7 +71,7 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
   else
   {
     std::string prevName = client.getNickname();
-    client.setNickname(cmdlist[1]);
+    client.setNickname(cmdlist[1]); // CHECK : \r\n 안붙어있나?
     if (client.getIsRegistered() == false)
     {
 	    if (client.getUserInfo().size() == 4)
@@ -81,8 +81,11 @@ void Nick::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
         return ;
       }
     }//TODO: registered 안 되었을 때도 write 할 지 결정하기
-    else
-	  {	//내가 존재하는 모든 채널의 유저에게 한번만 write
+    else if (client.getJoinedChannel().size() == 0){ // 채널에 없는 경우에도 응답을 해줘야지
+        makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(prevName, mergeVec(cmdlist)));
+	}
+	else
+	{	//내가 존재하는 모든 채널의 유저에게 한번만 write
       std::set<int> list;
       list.clear();	//necessary?
       std::vector<Channel *>::iterator	it;
