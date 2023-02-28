@@ -105,8 +105,11 @@
 #define RPL_ENDOFNAMES(client, channel) \
     (std::string(":ircserv 366 ") + std::string(client) + " #" + std::string(channel) + " :End of /NAMES list\n")
 
+// #define SUCCESS_REPL(nick, cmd) 
+//     (std::string(":") + std::string(nick) + std::string("@ ") + std::string(cmd) + "\r\n")
+
 #define SUCCESS_REPL(nick, cmd) \
-    (std::string(":") + std::string(nick) + std::string("@ ") + std::string(cmd) + "\n")
+   (std::string(":") + std::string(nick) + std::string("@ ") + std::string(cmd).erase(cmd.length() - 1, 1) + "\r\n")
 
 #endif
 
