@@ -45,11 +45,6 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 					break;
 				}
 			}
-			
-			// 타겟 채널에 아무도 없으면 채널삭제
-			if (targetChannel.getClients().size() == 0)
-				server.getChannels().erase(targetChannel.getChannelName());
-
 			// client가 접속해있는 채널 리스트에서 타겟삭제
 			for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it){
 				if ((*it)->getChannelName() == targetChannel.getChannelName()){
@@ -57,6 +52,9 @@ void  Part::execute(std::vector<std::string>& cmdlist, Client& client, \
 					break;
 				}
 			}			
+			// 타겟 채널에 아무도 없으면 채널삭제
+			if (targetChannel.getClients().size() == 0)
+				server.getChannels().erase(targetChannel.getChannelName());
 		} 
 	}
 	return;

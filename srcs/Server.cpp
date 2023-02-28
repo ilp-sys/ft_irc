@@ -1,4 +1,5 @@
 #include "../includes/Server.hpp"
+#include <iterator>
 
 Server& Server::getInstance()
 {
@@ -177,13 +178,15 @@ std::string mergeVec(const std::vector<std::string> &vec)
 	return (res);
 }
 
-std::string mergeMsg (const std::vector<std::string> &vec)
+std::string mergeMsg (const std::vector<std::string> &vec, int pos)
 {
     std::string str;
 
+	std::vector<std::string>::const_iterator dest = vec.begin();
+	std::advance(dest, pos);
     for (std::vector<std::string>::const_iterator it = vec.begin(); it != vec.end(); ++it)
     {
-        if (it == --vec.end() && (*it)[0] != ':')
+        if (it == dest && (*it)[0] != ':')
                 str += ":";
         str += *it;
         str += " ";

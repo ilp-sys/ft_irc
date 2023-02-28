@@ -8,14 +8,9 @@ Nick::Nick() : Command(2), SPECIAL("[]\\\\`_^{|}"){}
 //TODO: 9자리 까지 체크하면 된다고는 하지만? 실제로는 ...
 bool  Nick::checkArgsFormat(std::string& newnick)
 {
-  int limit;
-
   if (std::isalpha(newnick.data()[0]) == 0 && SPECIAL.find(newnick.data()[0]) == std::string::npos)
     return (false);
-  limit = newnick.length();
-  if (limit > 9)
-    limit = 9;
-  for (int i = 1; i < limit; i++)
+  for (int i = 1; i < static_cast<int>(newnick.length()); i++)
   {
     if (newnick.data()[i] != '-' && (std::isdigit(newnick.data()[i]) == 0) \
       && (std::isalpha(newnick.data()[i]) == 0) && SPECIAL.find(newnick.data()[i]) == std::string::npos)

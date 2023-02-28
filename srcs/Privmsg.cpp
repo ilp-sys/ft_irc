@@ -10,7 +10,7 @@ bool  Privmsg::checkArgs(std::vector<std::string>& cmdlist, Client& client)
     Server& server = Server::getInstance();
     if (static_cast<int>(cmdlist.size()) - 1 < getRequiredArgsNumber())
     {
-        makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS("client.getUserName()", mergeVec(cmdlist)));
+        makeWriteEvent(client.getUserSock(), server.getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), mergeVec(cmdlist)));
         return (false);
     }
     return (true);
@@ -64,7 +64,7 @@ void Privmsg::execute(std::vector<std::string>& cmdlist, Client& client, std::ve
         //iterate target user to make event
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
         {
-            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+            makeWriteEvent((*it)->getUserSock(), server.getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist, 2)));
         }
     }
 }
