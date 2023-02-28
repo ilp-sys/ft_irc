@@ -61,23 +61,15 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
     return ;
   }
   //다 존재하면? 해당 채널에서 user 삭제하고 모든 채널의 유저에게 메세지를 던진다
-  //:aaaa!root@127.0.0.1 KICK #target qwer :go away (aaaa가 qwer을 #target에서 쫒아냄. 사유는 go away)
-  std::string msg;
-  if (cmdlist.size() > 3)
-  {
-    for (unsigned long i = 3; i < cmdlist.size(); i++)
-    {
-      msg += std::string(cmdlist[i]); //string merge
-      if (i < cmdlist.size() - 1)
-        msg += std::string(" ");
-    }
-  }
-  else // I think is not working @wsehyeon
-    msg = std::string("no reason");
+  //:aaaa!root@127.0.0.1 KICK #target qwer :go away (aaaa가 qwer을 #target에서 쫒아냄. 사유는 go away
+  if (cmdlist.size() == 4 && cmdlist[3] == ":")
+	cmdlist.pop_back();
+  if (cmdlist.size() < 4)
+	cmdlist.push_back("no reason");
   makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
   ch_iter->second.getClients().erase(target); // 채널 안에 나 지우기 얘는 이터레이터 pos가 호환되는 애 맞음
   for (std::vector<Channel *>::iterator it = client.getJoinedChannel().begin(); it != client.getJoinedChannel().end(); ++it ){
-	if ((*it)->getChannelName() == cmdlist[1].erase(0,1)){
+	if ((*it)->getChannelName() == token){
 		client.getJoinedChannel().erase(it);// 내 안에 채널 지우기
 		break;
 	}
@@ -86,7 +78,7 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
   if (ch_iter->second.getClients().size() > 0){
 	ch_iter->second.setOpFd(ch_iter->second.getClients().front()->getUserSock());
 	for (target = ch_iter->second.getClients().begin(); target != ch_iter->second.getClients().end(); target++)
-    makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+    	makeWriteEvent((*target)->getUserSock(), Server::getInstance().getChangeList(), SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
   }
   else{
 	server.getChannels().erase(cmdlist[1].erase(0, 1));
