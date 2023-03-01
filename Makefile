@@ -26,7 +26,7 @@ all				: $(NAME)
 $(NAME) 		: $(OBJS)
 				$(CXX) $(CXXFLAGS) -I$(INCDIR) $^ -o $@
 
-.PHONY		: clean
+.PHONY			: clean
 clean			:
 				$(RM) $(RMFLAGS) $(OBJS)
 				$(RM) $(RMFLAGS) $(OBJDIR)

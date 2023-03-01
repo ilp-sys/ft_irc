@@ -118,7 +118,6 @@ std::string Bot::thinking(std::string watched_msg){
 		// DM일 때는 메세지로 보내준 채널로 접속
 		if (v[2] == "hnrbot"){
 			if (v[3].find('#') != std::string::npos){ // 귓말로 채널 보낼 때만 채널로 접속하겠다 송신
-				// TODO: SOMEONE PRIVMSG BOT :#42seoul adsfhjkl 이렇게 올 때는 그냥 #42seoul로 sjoin
 				return std::string("JOIN " + v[3]);
 			}
 		}
