@@ -20,9 +20,6 @@ std::string getAllClientName(Channel *channel);
 
 void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-    //Server& server = Server::getInstance();
-    //std::map<std::string, Channel>& channels = server.getChannels();
-
     std::vector<Channel*> targetChannel;
 
     if (checkArgs(cmdlist, client))
@@ -57,7 +54,6 @@ void Join::execute(std::vector<std::string>& cmdlist, Client& client, std::vecto
             std::vector<Client*> existingClient = (*it_chan)->getClients();
             for (std::vector<Client*>::iterator it_cli = existingClient.begin(); it_cli != existingClient.end(); ++it_cli)
             {
-                //TODO: replace to actual ip
 				std::vector<std::string> reply = cmdlist;
 				reply[1] = "#" + (*it_chan)->getChannelName();
                 makeWriteEvent((*it_cli)->getUserSock(), changelist,  SUCCESS_REPL(client.getNickname(), mergeVec(reply)));

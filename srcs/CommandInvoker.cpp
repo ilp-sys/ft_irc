@@ -11,7 +11,6 @@
 #include "../includes/Notice.hpp"
 #include "../includes/Quit.hpp"
 
-//TODO: Connect Channel Map
 CommandInvoker::CommandInvoker()
 {
   _commandMap.insert(std::make_pair("NICK", new Nick()));
@@ -28,7 +27,6 @@ CommandInvoker::CommandInvoker()
 
 void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident, std::vector<struct kevent>& changelist, std::map<std::string, Channel>* channels)
 {
-	//TODO: Set Common Errors ex) no such commands
 	Server& server = Server::getInstance();
 	Client &client = server.getClients().find(ident)->second;
 	if (_commandMap.find(cmdline[0]) == _commandMap.end())
@@ -36,10 +34,8 @@ void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident
 		_commandMap["nick"]->makeWriteEvent(ident, changelist, ERR_UNKNOWNCOMMAND(client.getNickname(), cmdline[0]));
 		return ;
 	}
-	//pass하지 않은 상태라면, PASS 밖에 실행 못함!
 	if (client.getIsPassed() == false)
 	{
-		//TODO: writing event
 		if (cmdline[0] != "PASS")
 		{
 			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
@@ -48,7 +44,6 @@ void	CommandInvoker::executeCommand(std::vector<std::string> &cmdline, int ident
 	}
 	else if (client.getIsRegistered() == false)
 	{
-		//TODO: writing event
 		if (cmdline[0] != "NICK" && cmdline[0] != "USER")
 		{
 			_commandMap["pass"]->makeWriteEvent(ident, changelist, ERR_NOTREGISTERED(client.getNickname(), cmdline[0]));
@@ -103,7 +98,6 @@ void  CommandInvoker::parseLine(const std::string& msg, std::vector<std::string>
 
 void CommandInvoker::commandConnector(int ident, const std::string& message)
 {
-	// (void)ident;
   Server& server = Server::getInstance();
   std::vector<std::string> commands;
   std::vector<std::string> cmdline;

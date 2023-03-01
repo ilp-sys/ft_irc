@@ -41,7 +41,6 @@ void	Client::setNickname(const std::string& name)
 	_nickname = name;
 }
 
-//TODO: UserInfo 바꾸는 경우가 있는지
 void	Client::setUserInfo(const std::string& string)
 {
 	_userInfo.push_back(string);

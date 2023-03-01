@@ -10,7 +10,6 @@ bool  Kick::checkArgs(std::vector<std::string>& cmdlist, Client& client)
     makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NEEDMOREPARAMS(client.getNickname(), cmdlist[0]));
     return (false);
   }
-  //채널 형식체크 out - 403 ERR_NOSUCHCHANNEL
   if (cmdlist[1][0] != '#')
   {
     makeWriteEvent(client.getUserSock(), Server::getInstance().getChangeList(), ERR_NOSUCHCHANNEL(client.getNickname(), cmdlist[1]));

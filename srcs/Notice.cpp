@@ -59,9 +59,6 @@ void Notice::execute(std::vector<std::string>& cmdlist, Client& client, std::vec
 
         //iterate target user to make event
         for (std::vector<Client *>::iterator it = targetUser.begin(); it != targetUser.end(); ++it)
-        {
-            //TODO: fix hard coded address
             makeWriteEvent((*it)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist, 2)));
-        }
     }
 }

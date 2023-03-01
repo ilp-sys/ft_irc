@@ -21,7 +21,6 @@ void  Pass::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
 		return ;
 	}
 	client.setIsPassed();
-	//makeWriteEvent(client.getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), client.getUserName(), client.getHostName(), cmdlist[0]));
 }
 
 bool  Pass::checkArgs(std::vector<std::string>& cmdlist, Client& client)
