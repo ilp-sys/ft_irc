@@ -76,12 +76,12 @@ void  Kick::execute(std::vector<std::string>& cmdlist, Client& client, std::vect
   }
 
   //trim cmdlist
-  if (cmdlist.size() == 4 && cmdlist[3] == ":")
+  if (cmdlist.size() < 4 || cmdlist[3] == ":")
       cmdlist.push_back("no reason");
 
   //notify to all users in the channel -> didn't erase yet
   for (std::vector<Client*>::iterator it = servChanIter->second.getClients().begin(); it != servChanIter->second.getClients().end(); ++it)
-      makeWriteEvent((*it)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist)));
+      makeWriteEvent((*it)->getUserSock(), changelist, SUCCESS_REPL(client.getNickname(), mergeMsg(cmdlist, 3)));
 
   int targetSock = (*chanTargetIter)->getUserSock();
   for (std::vector<Channel*>::iterator it = (*chanTargetIter)->getJoinedChannel().begin(); it != (*chanTargetIter)->getJoinedChannel().end(); ++it)
