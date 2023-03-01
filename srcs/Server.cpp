@@ -128,9 +128,8 @@ void Server::handleRead(struct kevent &k){
   if (readByte != 0){
     _clients.find(k.ident)->second.getBuffer() += tmp;
   }
-  // WARNING! back() is C++11 function... we need to find better 
-  if (_clients.find(k.ident)->second.getBuffer().back() == '\n' || \
-      _clients.find(k.ident)->second.getBuffer().back() == '\r'){
+  if (*(_clients.find(k.ident)->second.getBuffer().end() -1) == '\n' || \
+      *(_clients.find(k.ident)->second.getBuffer().end() -1) == '\r'){
     _invoker.commandConnector(k.ident, _clients.find(k.ident)->second.getBuffer().data());
     _clients.find(k.ident)->second.getBuffer().clear();
   }
